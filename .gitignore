@@ -3,7 +3,6 @@
 /IMGFLIP_local.csv
 /__pycache__
 /all_images_IMGFlip_templates
-/embedding_generator.py
 /embeddings
 /filenames_noTemplate_global.csv
 /filenames_noTemplate_local.csv
