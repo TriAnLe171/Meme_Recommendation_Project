@@ -1,0 +1,17 @@
+/IMGFLIP_fullcontext_final.csv
+/IMGFLIP_global.csv
+/IMGFLIP_local.csv
+/__pycache__
+/all_images_IMGFlip_templates
+/embedding_generator.py
+/embeddings
+/filenames_noTemplate_global.csv
+/filenames_noTemplate_local.csv
+/filenames_withTemplate.csv
+/global300.csv
+/images
+/last_update
+/local298.csv
+/meme_to_template_map_updated.csv
+/results
+/sentiment_analysis_scores_300.csv
