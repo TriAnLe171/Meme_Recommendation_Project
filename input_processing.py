@@ -16,19 +16,18 @@ You are a meme-recommendation assistant.
 
 Analyze the user's request and answer this question:
 
-    "Is the user explicitly requesting meme templates or formats (e.g., specific meme images or formats)?"
+    "Is the user explicitly requesting meme templates or formats (e.g., specific meme images or recognizable formats)?"
 
 Respond with **only one word**: `yes` or `no`. 
 
 Use the following rules:
-• Respond `yes` if the user clearly mentions a meme *template*, *format*, or *type of meme* (e.g., 'Distracted Boyfriend', 'Drakeposting').
+• Respond `yes` if the user clearly mentions a meme *template*, *format*, or *type of meme* (e.g., 'Distracted Boyfriend', 'Drakeposting', 'Two Buttons').
 • Respond `no` if the user only refers to *text*, *message*, *topic* without mentioning templates or if the request is unclear, ambiguous.
 • If uncertain, make your best guess based on the language of the request.
 
 User request:
 \"\"\"{user_input}\"\"\"
 """
-    print("\n[DEBUG] Prompt for template decision:\n", prompt)
     return prompt
 
 
@@ -37,7 +36,7 @@ def predict_template_decision(user_input):
     try:
         response = model.generate_content(prompt)
         answer = response.text.strip().lower()
-        print("\n[DEBUG] Raw Gemini response for template decision:\n", answer)
+        # print("\n[DEBUG] Raw Gemini response for template decision:\n", answer)
         if "yes" in answer:
             return True
         else:
@@ -64,7 +63,6 @@ Use the following rules:
 User request:
 \"\"\"{user_input}\"\"\"
 """
-    print("\n[DEBUG] Prompt for topic presence decision:\n", prompt)
     return prompt
 
 def predict_topic_presence(user_input):
@@ -72,7 +70,7 @@ def predict_topic_presence(user_input):
     try:
         response = model.generate_content(prompt)
         answer = response.text.strip().lower()
-        print("\n[DEBUG] Gemini response for topic presence:", answer)
+        # print("\n[DEBUG] Gemini response for topic presence:", answer)
         if "yes" in answer:
             return True
         else:
@@ -86,10 +84,12 @@ def predict_topic_presence(user_input):
 def build_prompt_details(user_input, wants_template, has_topics):
     if wants_template and has_topics:
         prompt = f"""
-You are a meme-recommendation assistant. Analyze the following user request and return a JSON object with exactly these fields:
+You are a meme-recommendation assistant. 
+
+Analyze the following user request and return a JSON object with exactly these fields:
 
     1. "topics": A list of specific and relevant subjects, keywords, or themes the user is interested in (e.g., people, events, themes).
-    2. "usages": A list of the intended purposes or usages of the memes (e.g., humor, comparison, political satire).
+    2. "usages": A list of the intended purposes or usages for the recommended memes (e.g., humor, comparison, political satire).
 
 Return only the JSON object in the format below. If a field is unclear or missing, make a best guess based on the request.
 
@@ -106,11 +106,13 @@ Expected output format:
 
     elif not wants_template and has_topics:
         prompt = f"""
-You are a meme-recommendation assistant. Analyze the following user request and return a JSON object with exactly these three fields:
+You are a meme-recommendation assistant. 
+
+Analyze the following user request and return a JSON object with exactly these three fields:
 
 1. "topics": A list of specific and relevant subjects, keywords, or themes the user is interested in (e.g., people, themes, events).
 2. "recommendation_focus": Specify the focus of the recommendation — either "local" (based on the text or message in the meme) or "global" (based on the overall meme format or template).
-3. "usages": A list of the intended purposes or usages for the memes (e.g., humor, comparison, political satire).
+3. "usages": A list of the intended purposes or usages for the recommended memes (e.g., humor, comparison, political satire).
 
 Return only the JSON object in the format below. If a field is unclear or missing, make a best guess based on the request.
 
@@ -132,7 +134,7 @@ You are a meme-recommendation assistant. The user did not mention any specific t
 
 Your task is to analyze the overall tone or emotional intent behind the user's request and return a JSON object with exactly one field:
 
-• "sentiment_preference": a list containing a single emotion or tone that best matches the user's intent.
+• "sentiment_preference": a single emotion or tone that best matches the user's intent.
 
 Choose **only one** from the following list:
 ["joy", "neutral", "anticipation", "disgust", "anger", "sadness", 
@@ -143,10 +145,9 @@ User request:
 
 Expected output format:
 {{
-  "sentiment_preference": ["joy"]
+  "sentiment_preference": "joy"
 }}
 """
-    print("\n[DEBUG] Prompt for extracting details:\n", prompt)
     return prompt
 
 
@@ -156,17 +157,17 @@ def predict_input_details(user_input, wants_template,has_topics):
         response = model.generate_content(prompt)
         answer = response.text.strip()
 
-        print("\n[DEBUG] Raw Gemini response for input details:\n", answer)
+        # print("\n[DEBUG] Raw Gemini response for input details:\n", answer)
 
         match = re.search(r"\{.*\}", answer, re.DOTALL)
         if match:
             json_str = match.group(0).strip()
             json_str = json_str.replace("'", '"')  # Ensure quotes are JSON-compatible
 
-            print("\n[DEBUG] Extracted JSON string:\n", json_str)
+            # print("\n[DEBUG] Extracted JSON string:\n", json_str)
 
             processed_input = json.loads(json_str)
-            print("\n[DEBUG] Parsed JSON object:\n", processed_input)
+            # print("\n[DEBUG] Parsed JSON object:\n", processed_input)
             return processed_input
         else:
             print("[ERROR] No valid dictionary found in the response.")
@@ -202,5 +203,5 @@ def process_user_input(user_input):
 
 
 if __name__ == "__main__":
-    user_input = "Show me some memes about climate change and global warming that I can share for a college assignment."
+    user_input = "Give a meme to cheer me up after a long day at work."
     process_user_input(user_input)
