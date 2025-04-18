@@ -52,9 +52,9 @@ def compute_image_hash(image_path):
                 return None
 
 
-def get_similar_memes(topics = None, need_template=None,search_by="Global", sentiment_preference=None, top_n=10,top_n_template=5):
+def get_similar_memes(topics = None, need_template=None, usages=None, search_by="Global", sentiment_preference='joy', top_n=10,top_n_template=5):
     """Recommend top-N memes based on text input similarity."""
-    if topics != None:
+    if topics and usages:
         user_embedding = text_model.encode(topics).reshape(1, -1)
         # Use appropriate embeddings and dataset
         if need_template:
@@ -86,18 +86,18 @@ def get_similar_memes(topics = None, need_template=None,search_by="Global", sent
         similar_indices = np.argsort(cosine_sim)[::-1]
 
         # sentiment preference
-        if sentiment_preference:
-            df_sentiments = pd.read_csv("sentiment_analysis_scores_300.csv") 
-            sentiment_lookup = df_sentiments.set_index("Filename")
-            filtered_indices = []
-            for idx in similar_indices:
-                filename = df_filename_withTemplate["Filename"][idx] if need_template else current_filenames[idx]
-                if filename in sentiment_lookup.index:
-                    sentiment_score = sentiment_lookup.loc[filename].get(sentiment_preference, 0)
-                    if sentiment_score > 0.7:
-                        filtered_indices.append(idx)
+        # if sentiment_preference:
+        #     df_sentiments = pd.read_csv("sentiment_analysis_scores_300.csv") 
+        #     sentiment_lookup = df_sentiments.set_index("Filename")
+        #     filtered_indices = []
+        #     for idx in similar_indices:
+        #         filename = df_filename_withTemplate["Filename"][idx] if need_template else current_filenames[idx]
+        #         if filename in sentiment_lookup.index:
+        #             sentiment_score = sentiment_lookup.loc[filename].get(sentiment_preference, 0)
+        #             if sentiment_score > 0.7:
+        #                 filtered_indices.append(idx)
         
-            similar_indices = filtered_indices
+        #     similar_indices = filtered_indices
         
         recommended_memes = [current_filenames[idx] for idx in similar_indices]
 
@@ -130,13 +130,70 @@ def get_similar_memes(topics = None, need_template=None,search_by="Global", sent
                     break
             
             return unique_meme_recommendations
+    elif not topic and usages:
+        #TODO
+
     else:
-        if need_template:
-            if sentiment_preference:
-                # TODO
-        else:
-            if sentiment_preference:
-                # TODO
+        if sentiment_preference:
+            df_sentiments = pd.read_csv("sentiment_analysis_scores_300.csv")
+            sentiment_lookup = df_sentiments.set_index("Filename")
+
+            if need_template:
+                # map filenames → templates
+                df_mapping = pd.read_csv("meme_to_template_map_updated.csv", names=["Filename", "Template"])
+                mapping = df_mapping.set_index("Filename")["Template"].to_dict()
+
+                # sort filenames by sentiment score descending
+                sentiment_scores = sentiment_lookup[sentiment_preference].dropna()
+                sorted_filenames = sentiment_scores.sort_values(ascending=False).index.tolist()
+
+                # map to templates preserving order
+                templs = [mapping.get(fn) for fn in sorted_filenames if fn in mapping]
+
+                # unique by perceptual hash, take top_n_template
+                uniq, seen = [], set()
+                for tmpl in templs:
+                    try:
+                        idx = list(mapping.values()).index(tmpl)
+                    except ValueError:
+                        continue
+                    img_path = get_image_path(idx, need_template=True)
+                    h = compute_image_hash(img_path)
+                    if h and h not in seen:
+                        seen.add(h)
+                        uniq.append(tmpl)
+                        if len(uniq) >= top_n_template:
+                            break
+                return uniq
+
+            else:
+                # choose local or global list
+                files = (df_filename_noTemplate_local["Filename"].tolist())
+
+                # filter by sentiment
+                candidates = [fn for fn in files
+                              if fn in sentiment_lookup.index
+                              and sentiment_lookup.loc[fn].get(sentiment_preference, 0) > 0.7]
+
+                 # select files present in sentiment lookup and sort by score
+                valid_files = [fn for fn in files if fn in sentiment_lookup.index]
+                valid_scores = sentiment_lookup.loc[valid_files, sentiment_preference]
+                sorted_files = valid_scores.sort_values(ascending=False).index.tolist()
+
+                # unique by perceptual hash, take top_n
+                uniq, seen = [], set()
+                for fn in sorted_files:
+                    idx = files.index(fn)
+                    img_path = get_image_path(idx, need_template=False, search_by=search_by)
+                    h = compute_image_hash(img_path)
+                    if h and h not in seen:
+                        seen.add(h)
+                        uniq.append(fn)
+                        if len(uniq) >= top_n:
+                            break
+                return uniq
+
+
 
 
         
