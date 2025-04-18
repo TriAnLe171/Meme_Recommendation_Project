@@ -4,7 +4,7 @@ import json
 import GeminiAPI
 
 # Initialize Gemini with your API key
-genai.configure(api_key=GeminiAPI.API)  # 🔒 Replace with your actual API key
+genai.configure(api_key=GeminiAPI.key)  # 🔒 Replace with your actual API key
 
 # Create a Gemini model
 model = genai.GenerativeModel("gemini-2.0-flash-lite")
@@ -202,5 +202,5 @@ def process_user_input(user_input):
 
 
 if __name__ == "__main__":
-    user_input = "I wants sad memes."
+    user_input = "I want funny meme templates about schools to make fun of the students."
     process_user_input(user_input)
