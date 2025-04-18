@@ -14,3 +14,7 @@
 /meme_to_template_map_updated.csv
 /results
 /sentiment_analysis_scores_300.csv
+/full_context_300.csv
+/under_0.7.txt
+/usage_results_gemini.csv
+/usage_results.csv
