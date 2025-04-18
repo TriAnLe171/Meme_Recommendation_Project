@@ -9,7 +9,7 @@ from tqdm.auto import tqdm
 device = 0 if torch.cuda.is_available() else -1
 batch_size = 64
 
-i = 104959
+i = 177407
 
 classifier = pipeline(
     "zero-shot-classification",

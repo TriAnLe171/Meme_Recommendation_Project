@@ -202,5 +202,5 @@ def process_user_input(user_input):
 
 
 if __name__ == "__main__":
-    user_input = "I want funny meme templates about schools to make fun of the students."
+    user_input = "I want a meme about the new tax laws in the US-China relations"
     process_user_input(user_input)
