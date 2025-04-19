@@ -4,6 +4,7 @@ import local
 import os
 import shutil
 import torch
+import Gemini_agents as agents
 
 results_folder = "results"
 error_log_path = "error_log.txt"
@@ -26,47 +27,52 @@ def save_meme(image_path, meme_fileName):
 def main():
     torch.cuda.empty_cache()
     init_new_folders()
-    user_query = input("Enter a meme description or topic: ")
-    mode = input("Do you want to search using meme templates? (y/n): ").strip().lower()
-    need_template = mode == 'y'
 
-    sentiment_options = [
-        "joy", "neutral", "anticipation", "disgust", "anger", "sadness", 
-        "fear", "negative", "positive", "love", "optimism", "surprised", "None"
-    ]
+    user_query = input("Please enter your query: ").strip()
 
-    print("Select a sentiment preference:")
-    for i, sentiment in enumerate(sentiment_options, 1):
-        print(f"{i}. {sentiment}")
-    try:
-        sentiment_choice = int(input("Enter the number corresponding to your choice (1-13): "))
-        sentiment_preference = sentiment_options[sentiment_choice - 1]
-    except:
-        print("Invalid choice. Proceeding without sentiment preference.")
-        sentiment_preference = None
+    processed = agents.process_user_input(user_query)
+    if not processed:
+        print("Could not understand the query. Please try again.")
+        return
 
-    if need_template == False:
-        search_mode = input("Search by Local or Global? (L/G): ").strip().upper()
-        search_by = "Local" if search_mode == 'L' else "Global"
-        recommended_memes = local.get_similar_memes(
-            user_query, need_template=need_template, search_by=search_by, sentiment_preference=sentiment_preference
-        )   
-    else:
-        recommended_memes = local.get_similar_memes(
-            user_query, need_template=need_template, sentiment_preference=sentiment_preference
-        )
+    need_template      = processed["need_template"]
+    has_topic          = processed["has_topics"]
+    has_usage          = processed["has_usages"]
+    details            = processed.get("details") or {}
+
+    topics_str         = " ".join(details.get("topics", [])) if has_topic else None
+    usages_str         = "|".join(details.get("usages", []))   if has_usage else None
+    search_by          = details.get("recommendation_focus", "Global").capitalize() if has_topic else None
+    sentiment_preference = details.get("sentiment_preference", "neutral") if not has_topic and not has_usage else None
+
+    #debug
+    print(f"Topics: {topics_str}")
+    print(f"Usages: {usages_str}")
+    print(f"Search By: {search_by}")
+    print(f"Sentiment Preference: {sentiment_preference}")
+
+    recommended_memes = local.get_similar_memes(
+        topics=topics_str,
+        need_template=need_template,
+        usages=usages_str,
+        search_by=search_by,
+        sentiment_preference=sentiment_preference
+    )
 
     for i, result in enumerate(recommended_memes):
         if need_template:
             print(f"Recommended Template {i+1}: {result}")
-            meme_entry = local.df_filename_withTemplate[local.df_filename_withTemplate["Filename"] == result]
-            index = meme_entry.index[0]
+            df = local.df_filename_withTemplate 
+            idx = df[df["Filename"] == result].index[0]
+
         else:
             print(f"Recommended Meme {i+1}: {result}")
-            meme_entry = local.df_filename_noTemplate_local[local.df_filename_noTemplate_local["Filename"] == result] if search_by == "Local" else local.df_filename_noTemplate_global[local.df_filename_noTemplate_global["Filename"] == result]
-            index = meme_entry.index[0]
+            df = (local.df_filename_noTemplate_local 
+                  if search_by == "Local" 
+                  else local.df_filename_noTemplate_global)
+            idx = df[df["Filename"] == result].index[0]
 
-        image_path = local.get_image_path(index, need_template, search_by if not need_template else None)
+        image_path = local.get_image_path(idx, need_template, search_by if not need_template else None)
         save_meme(image_path, result)
 
 if __name__ == "__main__":
