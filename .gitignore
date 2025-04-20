@@ -15,5 +15,4 @@
 /full_context
 /CSV_for_embeddings
 /usage_result.csv
-/error_log
-input_output_log.txt
+/log

@@ -7,6 +7,8 @@ import shutil
 import os
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
+from pyngrok import ngrok, conf
+from API_keys import key_ngrok
 
 app = FastAPI()
 
@@ -57,3 +59,8 @@ if os.path.exists("results"):
 def index():
     with open("index.html", "r") as f:
         return f.read()
+
+if __name__ == "__main__":
+
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)

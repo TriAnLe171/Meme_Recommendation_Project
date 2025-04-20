@@ -1,7 +1,7 @@
 import re
 import google.generativeai as genai
 import json
-import GeminiAPI
+from API_keys import key_gemini
 from prompts import (
     build_prompt_template_decision,
     build_prompt_topic_presence,
@@ -9,7 +9,7 @@ from prompts import (
     build_prompt_details,
 )
 
-genai.configure(api_key=GeminiAPI.key)  # 🔒 Replace with your actual API key
+genai.configure(api_key=key_gemini)  # 🔒 Replace with your actual API key
 
 model_1 = genai.GenerativeModel("gemini-2.0-flash")
 model_2 = genai.GenerativeModel("gemini-2.0-flash-lite") 
@@ -105,7 +105,7 @@ def process_user_input(user_input):
         "details": details
     }
 
-    with open("input_output_log.txt", "a") as f:
+    with open("log/input_output_log.txt", "a") as f:
         f.write("\n========== Processing New Input ==========\n")
         f.write(f"User Input: {user_input}\n\n")
         f.write(f"\n[FINAL RESULT] Processed Output:\n{result}\n")
