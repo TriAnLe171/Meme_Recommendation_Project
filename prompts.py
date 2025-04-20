@@ -9,9 +9,21 @@ Analyze the user's request and answer this question:
 Respond with **only one word**: `yes` or `no`. 
 
 Use the following rules:
-• Respond `yes` if the user clearly mentions a meme *template*, *format*, or *type of meme* (e.g., 'Distracted Boyfriend', 'Drakeposting', 'Two Buttons').
-• Respond `no` if the user only refers to *text*, *message*, *topic* without mentioning templates or if the request is unclear, ambiguous.
-• If uncertain, make your best guess based on the language of the request.
+• Respond `yes` if the user clearly uses the word *template*, *format*, or phrases like “type of meme” or “structure” that indicate they want a blank meme template or image format.
+• Do NOT respond `yes` just because the user names a meme (e.g., 'Drakeposting' or 'Two Buttons') — they must explicitly request it as a *template* or *format*.
+• Respond `no` if the user is asking for meme content (e.g., "Give me a Drakeposting meme") or does not clearly indicate interest in a blank format/template.
+
+---
+
+Example:
+
+User request:
+\"\"\"I want Leonardo Dicaprio memes.\"\"\"
+
+Expected answer:
+no
+
+---
 
 User request:
 \"\"\"{user_input}\"\"\"
@@ -25,14 +37,26 @@ You are a meme-recommendation assistant.
 
 Analyze the user's request and answer this question:
 
-    "Does the request mention specific topics or keywords for the recommended memes (such as names, events, issues, or objects)?"
+    "Does the request mention specific topics or keywords for the recommended memes (such as names, events, issues, objects, or recognizable meme formats)?"
 
 Respond with **only one word**: `yes` or `no`.
 
 Use the following rules:
-• Respond `yes` if the user clearly mentions specific topics or keywords (e.g., 'taxes', 'Elon Musk', 'climate change', 'graduation').
-• Respond `no` if the request is vague, general, or does not mention any specific topics.
+• Respond `yes` if the user clearly mentions specific topics, keywords, or well-known meme formats (e.g., 'taxes', 'Elon Musk', 'graduation', 'climate change', 'Two Buttons', 'Distracted Boyfriend').
+• Respond `no` if the request is vague, general, or does not mention any specific subjects or formats.
 • If uncertain, make your best guess based on the language of the request.
+
+---
+
+Example:
+
+User request:
+\"\"\"Give me Two Buttons meme templates.\"\"\"
+
+Expected answer:
+yes
+
+---
 
 User request:
 \"\"\"{user_input}\"\"\"
@@ -63,8 +87,9 @@ def build_prompt_details(user_input, need_template, has_topics, has_usages):
 # Add a rule to ignore emotional or comparative mentions in topics
     common_instruction = ('''
 Use the following rule when extracting "topics":
-Include only specific people, characters, events, or themes the user explicitly wants memes about.
-Do NOT include context-setting phrases (like 'bad day'), unrelated preferences (e.g., liking or disliking a subject), or secondary mentions not requested as the main focus.
+1. Include only specific people, characters, events, or themes the user explicitly wants memes about.
+2. Do NOT include context-setting phrases (like 'bad day'), unrelated preferences (e.g., liking or disliking a subject), or secondary mentions not requested as the main focus.
+3. Recognizable meme formats (e.g., "Two Buttons", "Distracted Boyfriend") should also be treated as valid topics.
 ''')
 
     if need_template and has_topics and has_usages:
@@ -75,7 +100,7 @@ You are a meme-recommendation assistant.
 
 Analyze the following user request and return a JSON object with exactly these fields:
 
-1. "topics": A list of specific and relevant subjects, keywords, or themes the user explicitly wants the meme to be about (e.g., people, events, themes).
+1. "topics": A list of specific and relevant subjects the user explicitly wants the meme to be about. This includes people, events, concepts, keywords, themes, or well-known meme formats (e.g., "Drakeposting", "Two Buttons").
 2. "usages": A list of the intended purposes or usages for the recommended memes (e.g., humor, comparison, political satire).
 
 Return only the JSON object in the format below. Use your best judgment to identify the user's intent, but only extract what's directly relevant.
@@ -85,7 +110,7 @@ Return only the JSON object in the format below. Use your best judgment to ident
 Example:
 
 User request:
-\"\"\"My day has been really bad, I want a meme that can cheer me up. I like Spongebob but not as much as minions, so give me minion meme templates.\"\"\"
+\"\"\"My day has been really bad, I want a meme that can cheer me up. I really like the movie Despicable Me, give me Minions meme templates.\"\"\"
 
 Expected output:
 {{
@@ -114,12 +139,12 @@ You are a meme-recommendation assistant.
 
 Analyze the following user request and return a JSON object with exactly these three fields:
 
-1. "topics": A list of specific and relevant subjects, keywords, or themes the user explicitly wants the meme to be about (e.g., people, events, themes).
+1. "topics": A list of specific and relevant subjects the user explicitly wants the meme to be about. This includes people, events, concepts, keywords, themes, or well-known meme formats (e.g., "Drakeposting", "Two Buttons").
 2. "recommendation_focus": Specify the focus of the recommendation — either "local" or "global".
-    - Use "local" if the user cares most about the *message, emotion, or text* in the meme.
-      Example: "Give me a meme about college finals that cheers me up" → local
-    - Use "global" if the user cares about a *specific meme format, structure, or visual style*.
-      Example: "Give me a Minions meme" or "Give me a Spongebob template" → global
+   • Use "global" if the user explicitly names:
+     - a known meme *format* or *template* (e.g., "Two Buttons", "Distracted Boyfriend"),  
+     - **or** a franchise/character commonly used as a meme (e.g., "Minions", "Despicable Me", "Spongebob").
+   • Use "local" in all other cases (i.e., when they care about the *message* or *text* rather than an existing image set).
 3. "usages": A list of the intended purposes or usages for the recommended memes (e.g., humor, comparison, political satire).
 
 Return only the JSON object in the format below. Use your best judgment to identify the user's intent, but only extract what's directly relevant.
@@ -129,7 +154,7 @@ Return only the JSON object in the format below. Use your best judgment to ident
 Example:
 
 User request:
-\"\"\"My day has been really bad, I want a meme that can cheer me up. I like Spongebob but not as much as minions, so give me minion memes.\"\"\"
+\"\"\"My day has been really bad, I want a meme that can cheer me up. I really like the movie Despicable Me, give me some Minions memes.\"\"\"
 
 Expected output:
 {{
@@ -197,12 +222,12 @@ You are a meme-recommendation assistant.
 
 Analyze the following user request and return a JSON object with exactly these two fields:
 
-1. "topics": A list of specific and relevant subjects, keywords, or themes the user explicitly wants the meme to be about (e.g., people, events, themes).
+1. "topics": A list of specific and relevant subjects the user explicitly wants the meme to be about. This includes people, events, concepts, keywords, themes, or well-known meme formats (e.g., "Drakeposting", "Two Buttons").
 2. "recommendation_focus": Specify the focus of the recommendation — either "local" or "global".
-    - Use "local" if the user cares most about the *message, emotion, or text* in the meme.
-      Example: "Give me a meme about college finals that cheers me up" → local
-    - Use "global" if the user cares about a *specific meme format, structure, or visual style*.
-      Example: "Give me a Minions meme" or "Give me a Spongebob template" → global
+   • Use "global" if the user explicitly names:
+     - a known meme *format* or *template* (e.g., "Two Buttons", "Distracted Boyfriend"),  
+     - **or** a franchise/character commonly used as a meme (e.g., "Minions", "Despicable Me", "Spongebob").
+   • Use "local" in all other cases (i.e., when they care about the *message* or *text* rather than an existing image set).
 
 Return only the JSON object in the format below. Use your best judgment to identify the user's intent, but only extract what's directly relevant.
 
@@ -240,7 +265,7 @@ You are a meme-recommendation assistant. The user is requesting a meme *template
 
 Your task is to analyze the request and return a JSON object with exactly one field:
 
-1. "topics": A list of specific and relevant subjects, keywords, or themes the user explicitly wants the meme to be about (e.g., people, events, themes).
+1. "topics": A list of specific and relevant subjects the user explicitly wants the meme to be about. This includes people, events, concepts, keywords, themes, or well-known meme formats (e.g., "Drakeposting", "Two Buttons").
 
 ---
 

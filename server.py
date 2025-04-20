@@ -1,0 +1,63 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import List, Optional
+from Gemini_agents import process_user_input
+import local
+import shutil
+import os
+from fastapi.staticfiles import StaticFiles
+import os
+from fastapi.responses import HTMLResponse
+
+app = FastAPI()
+
+class QueryRequest(BaseModel):
+    query: str
+
+@app.post("/recommend")
+def recommend(req: QueryRequest):
+    processed = process_user_input(req.query)
+    if not processed:
+        return {"error": "Could not understand the query."}
+
+    need_template = processed["need_template"]
+    has_topic = processed["has_topics"]
+    has_usage = processed["has_usages"]
+    details = processed.get("details") or {}
+
+    topics_str = " ".join(details.get("topics", [])) if has_topic else None
+    usages_str = "|".join(details.get("usages", [])) if has_usage else None
+    search_by = details.get("recommendation_focus", "Global").capitalize() if has_topic else None
+    sentiment_preference = details.get("sentiment_preference", "neutral") if not has_topic and not has_usage else None
+    
+    results_dir = "results"
+    if os.path.exists(results_dir):
+        for filename in os.listdir(results_dir):
+            file_path = os.path.join(results_dir, filename)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+
+    recommended_memes = local.get_similar_memes(
+        topics=topics_str,
+        need_template=need_template,
+        usages=usages_str,
+        search_by=search_by,
+        sentiment_preference=sentiment_preference
+    )
+
+    meme_urls = [f"/static/{filename}" for filename in recommended_memes]
+
+    return {
+        "memes": meme_urls,
+        "need_template": need_template,
+        "details": details
+    }
+
+
+if os.path.exists("results"):
+    app.mount("/static", StaticFiles(directory="results"), name="static")
+
+@app.get("/", response_class=HTMLResponse)
+def index():
+    with open("index.html", "r") as f:
+        return f.read()

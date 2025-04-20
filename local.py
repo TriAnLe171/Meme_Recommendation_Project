@@ -6,6 +6,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.preprocessing import MinMaxScaler
 import imagehash
 from PIL import Image
+import shutil
 
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -126,7 +127,7 @@ def get_similar_memes(topics = None, need_template=None, usages=None, search_by=
     if need_template:
         recs = [current_mapping[f] for f in recs]
 
-    unique, seen = [], set()
+    unique, seen, saved_filenames = [], set(), []
     limit = top_n_template if need_template else top_n 
     for fn in recs:
         idx = current_filenames.index(fn) if not need_template else list(current_mapping.values()).index(fn)
@@ -135,10 +136,16 @@ def get_similar_memes(topics = None, need_template=None, usages=None, search_by=
         if h and h not in seen:
             seen.add(h)
             unique.append(fn)
+            saved_filenames.append(img)
             if len(unique) >= limit:
                 break
-        
-    return unique
+    
+    # Copy recommended meme files to the results folder
+    results_folder = "results"
+    for image_path in saved_filenames:
+        shutil.copy(image_path, results_folder)
+
+    return [os.path.basename(path) for path in saved_filenames]
 
 def sentiment_based_recommendations(need_template, search_by, sentiment_preference, top_n, top_n_template):
     if not sentiment_preference:

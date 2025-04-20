@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meme Recommender</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
+      overflow-y: auto; /* Allow the whole page to scroll */
+    }
+
+    h2 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    #formContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    #memeForm {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+    }
+
+    #query {
+      padding: 12px;
+      font-size: 16px;
+      width: 100%;
+      margin-bottom: 20px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    #query:focus {
+      border-color: #007BFF;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #results {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-height: 300px; /* Limit the height of the results section */
+      overflow-y: auto; /* Allow scrolling if the results exceed the container height */
+    }
+
+    #results li {
+      list-style: none;
+      text-align: center;
+    }
+
+    #results img {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #results code {
+      display: block;
+      margin-top: 10px;
+      font-size: 14px;
+      color: #555;
+      word-wrap: break-word;
+    }
+
+    .no-memes {
+      color: #ff0000;
+      font-size: 18px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="formContainer">
+    <h2>Ask for a Meme</h2>
+    <form id="memeForm">
+      <input type="text" id="query" placeholder="Enter your meme request" required>
+      <button type="submit">Get Memes</button>
+    </form>
+  </div>
+
+  <h3>Results:</h3>
+  <ul id="results"></ul>
+
+  <script>
+    const form = document.getElementById('memeForm');
+    const results = document.getElementById('results');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      results.innerHTML = "";
+      const query = document.getElementById('query').value;
+
+      const response = await fetch('/recommend', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ query })
+      });
+
+      const data = await response.json();
+      if (data.memes && data.memes.length > 0) {
+        data.memes.forEach(meme => {
+          const li = document.createElement('li');
+          li.innerHTML = `<img src="${meme}" alt="Meme"><code>${meme}</code>`;
+          results.appendChild(li);
+        });
+      } else {
+        results.innerHTML = "<li class='no-memes'>No memes found.</li>";
+      }
+    });
+  </script>
+</body>
+</html>
