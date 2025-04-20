@@ -8,7 +8,6 @@
 /sentiment_analysis_scores_300.csv
 /under_0.7.txt
 /usage_results.csv
-/GeminiAPI.py
 /global_context
 /local_context
 /filenames
@@ -16,3 +15,4 @@
 /CSV_for_embeddings
 /usage_result.csv
 /log
+/API_keys.py
