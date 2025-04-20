@@ -47,7 +47,6 @@ def compute_image_hash(image_path):
                 img_hash = imagehash.phash(img)
                 return str(img_hash)
         except Exception as e:
-            #log error to a file
             with open("error_log/error_log.txt", "a") as log_file:
                 log_file.write(f"Error processing {image_path}: {e}\n")
                 return None
@@ -58,7 +57,6 @@ def get_similar_memes(topics = None, need_template=None, usages=None, search_by=
     if topics and usages:
         topic_embedding = text_model.encode(topics).reshape(1, -1)
 
-        # Use appropriate embeddings and dataset
         if need_template:
             df_mapping = pd.read_csv("meme_to_template_map_updated.csv", names=["Filename", "Template"])
             embeddings_path = "embeddings/template_topic_usage.npy"
@@ -163,7 +161,6 @@ def sentiment_based_recommendations(need_template, search_by, sentiment_preferen
 def _filter_and_copy(items, need_template, limit, results_folder):
     uniq, seen, saved = [], set(), []
     for key in items:
-        # resolve index→path
         idx = _get_index_for(key, need_template)
         img_path = get_image_path(idx, need_template)
         h = compute_image_hash(img_path)
@@ -179,11 +176,6 @@ def _filter_and_copy(items, need_template, limit, results_folder):
     return [os.path.basename(p) for p in saved]
 
 def _get_index_for(key, need_template):
-    """
-    Return the integer index of a meme filename or template in the appropriate dataframe.
-    key: the filename (or template name) to look up.
-    need_template: if True, search in df_filename_withTemplate; else in df_filename_noTemplate_global.
-    """
     if need_template:
         df = df_filename_withTemplate
     else:
