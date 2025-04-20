@@ -42,7 +42,7 @@ Analyze the user's request and answer this question:
 Respond with **only one word**: `yes` or `no`.
 
 Use the following rules:
-• Respond `yes` if the user clearly mentions specific topics, keywords, or well-known meme formats (e.g., 'taxes', 'Elon Musk', 'graduation', 'climate change', 'Two Buttons', 'Distracted Boyfriend').
+• Respond `yes` if the user is clearly interested in specific topics, keywords, or well-known meme formats (e.g., 'college students', 'taxes', 'Elon Musk', 'graduation', 'climate change', 'Two Buttons', 'Distracted Boyfriend').
 • Respond `no` if the request is vague, general, or does not mention any specific subjects or formats.
 • If uncertain, make your best guess based on the language of the request.
 

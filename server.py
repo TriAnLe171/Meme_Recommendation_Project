@@ -6,7 +6,6 @@ import local
 import shutil
 import os
 from fastapi.staticfiles import StaticFiles
-import os
 from fastapi.responses import HTMLResponse
 
 app = FastAPI()
@@ -31,11 +30,8 @@ def recommend(req: QueryRequest):
     sentiment_preference = details.get("sentiment_preference", "neutral") if not has_topic and not has_usage else None
     
     results_dir = "results"
-    if os.path.exists(results_dir):
-        for filename in os.listdir(results_dir):
-            file_path = os.path.join(results_dir, filename)
-            if os.path.isfile(file_path):
-                os.remove(file_path)
+    shutil.rmtree(results_dir)
+    os.makedirs(results_dir, exist_ok=True)
 
     recommended_memes = local.get_similar_memes(
         topics=topics_str,

@@ -31,7 +31,7 @@ def predict_template_decision(user_input):
 def predict_topic_presence(user_input):
     prompt = build_prompt_topic_presence(user_input)
     try:
-        response = model_2.generate_content(prompt)
+        response = model_1.generate_content(prompt)
         answer = response.text.strip().lower()
         # print("\n[DEBUG] Gemini response for topic presence:", answer)
         if "yes" in answer:
@@ -58,7 +58,7 @@ def predict_usage_decision(user_input):
 def predict_input_details(user_input, need_template,has_topics,has_usages):
     prompt = build_prompt_details(user_input, need_template, has_topics, has_usages)
     try:
-        response = model_2.generate_content(prompt)
+        response = model_1.generate_content(prompt)
         answer = response.text.strip()
         # print("\n[DEBUG] Raw Gemini response for input details:\n", answer)
 
@@ -83,8 +83,6 @@ def predict_input_details(user_input, need_template,has_topics,has_usages):
 
 
 def process_user_input(user_input):
-    print("\n========== Processing New Input ==========\n")
-    print("[INFO] User input:\n", user_input)
 
     need_template = predict_template_decision(user_input)
     has_topics = predict_topic_presence(user_input)
@@ -107,7 +105,13 @@ def process_user_input(user_input):
         "details": details
     }
 
-    print("\n[FINAL RESULT] Processed Output:\n", result)
+    with open("input_output_log.txt", "a") as f:
+        f.write("\n========== Processing New Input ==========\n")
+        f.write(f"User Input: {user_input}\n\n")
+        f.write(f"\n[FINAL RESULT] Processed Output:\n{result}\n")
+        f.write("=========================================\n")
+        f.write("\n\n")
+
     return result
 
 

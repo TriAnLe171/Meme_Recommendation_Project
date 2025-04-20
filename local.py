@@ -48,12 +48,12 @@ def compute_image_hash(image_path):
                 return str(img_hash)
         except Exception as e:
             #log error to a file
-            with open("error_log.txt", "a") as log_file:
+            with open("error_log/error_log.txt", "a") as log_file:
                 log_file.write(f"Error processing {image_path}: {e}\n")
                 return None
 
 
-def get_similar_memes(topics = None, need_template=None, usages=None, search_by="Global", sentiment_preference='joy', top_n=10,top_n_template=5):
+def get_similar_memes(topics = None, need_template=None, usages=None, search_by="Global", sentiment_preference='joy', top_n=12,top_n_template=8):
     """Recommend top-N memes based on text input similarity."""
     if topics and usages:
         topic_embedding = text_model.encode(topics).reshape(1, -1)
@@ -127,25 +127,7 @@ def get_similar_memes(topics = None, need_template=None, usages=None, search_by=
     if need_template:
         recs = [current_mapping[f] for f in recs]
 
-    unique, seen, saved_filenames = [], set(), []
-    limit = top_n_template if need_template else top_n 
-    for fn in recs:
-        idx = current_filenames.index(fn) if not need_template else list(current_mapping.values()).index(fn)
-        img = get_image_path(idx, need_template, search_by)
-        h = compute_image_hash(img)
-        if h and h not in seen:
-            seen.add(h)
-            unique.append(fn)
-            saved_filenames.append(img)
-            if len(unique) >= limit:
-                break
-    
-    # Copy recommended meme files to the results folder
-    results_folder = "results"
-    for image_path in saved_filenames:
-        shutil.copy(image_path, results_folder)
-
-    return [os.path.basename(path) for path in saved_filenames]
+    return _filter_and_copy(recs, need_template=need_template, limit=top_n_template if need_template else top_n, results_folder="results")
 
 def sentiment_based_recommendations(need_template, search_by, sentiment_preference, top_n, top_n_template):
     if not sentiment_preference:
@@ -163,20 +145,7 @@ def sentiment_based_recommendations(need_template, search_by, sentiment_preferen
 
         templs = [mapping.get(fn) for fn in sorted_filenames if fn in mapping]
 
-        uniq, seen = [], set()
-        for tmpl in templs:
-            try:
-                idx = list(mapping.values()).index(tmpl)
-            except ValueError:
-                continue
-            img_path = get_image_path(idx, need_template=True)
-            h = compute_image_hash(img_path)
-            if h and h not in seen:
-                seen.add(h)
-                uniq.append(tmpl)
-                if len(uniq) >= top_n_template:
-                    break
-        return uniq
+        return _filter_and_copy(templs, need_template=True, limit=top_n_template, results_folder="results")
 
     else:
         files = (df_filename_noTemplate_local["Filename"].tolist())
@@ -188,14 +157,40 @@ def sentiment_based_recommendations(need_template, search_by, sentiment_preferen
 
         sorted_files = valid_scores.index.tolist()
 
-        uniq, seen = [], set()
-        for fn in sorted_files:
-            idx = files.index(fn)
-            img_path = get_image_path(idx, need_template=False)
-            h = compute_image_hash(img_path)
-            if h and h not in seen:
-                seen.add(h)
-                uniq.append(fn)
-                if len(uniq) >= top_n:
-                    break
-        return uniq
+        return _filter_and_copy(sorted_files, need_template=False, limit=top_n, results_folder="results")
+
+
+def _filter_and_copy(items, need_template, limit, results_folder):
+    uniq, seen, saved = [], set(), []
+    for key in items:
+        # resolve index→path
+        idx = _get_index_for(key, need_template)
+        img_path = get_image_path(idx, need_template)
+        h = compute_image_hash(img_path)
+        if h and h not in seen:
+            seen.add(h)
+            uniq.append(key)
+            saved.append(img_path)
+            if len(uniq) >= limit:
+                break
+    for p in saved:
+        shutil.copy(p, results_folder)
+
+    return [os.path.basename(p) for p in saved]
+
+def _get_index_for(key, need_template):
+    """
+    Return the integer index of a meme filename or template in the appropriate dataframe.
+    key: the filename (or template name) to look up.
+    need_template: if True, search in df_filename_withTemplate; else in df_filename_noTemplate_global.
+    """
+    if need_template:
+        df = df_filename_withTemplate
+    else:
+        df = df_filename_noTemplate_global
+
+    matches = df.index[df["Filename"] == key].tolist()
+    if matches:
+        return matches[0]
+    else:
+        return None
