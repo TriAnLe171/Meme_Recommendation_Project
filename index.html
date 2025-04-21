@@ -2,152 +2,650 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meme Recommender</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MEMEMATCH</title>
   <style>
+    :root {
+      --primary: #4a90e2;
+      --secondary: #f4f4f9;
+      --text: #333;
+      --card-bg: #fff;
+      --radius: 8px;
+      --gap: 16px;
+      --transition: 0.3s ease;
+    }
+    [data-theme="dark"] {
+      --primary: #5a9bd5;
+      --secondary: #1e1e1e;
+      --text: #eeeeee;
+      --card-bg: #2a2a2a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f9;
-      display: flex;
-      justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--secondary);
+      color: var(--text);
+      display: flex; flex-direction: column;
       align-items: center;
+      padding: var(--gap);
       min-height: 100vh;
-      flex-direction: column;
-      overflow-y: auto; /* Allow the whole page to scroll */
     }
-
-    h2 {
-      color: #333;
+    header {
       text-align: center;
-      margin-bottom: 30px;
+      padding: var(--gap) 0;
+      margin-bottom: var(--gap * 1.5);
     }
-
-    #formContainer {
+    header h1 {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 300;
+      font-size: 2.75rem;
+      letter-spacing: 0.05em;
+      color: var(--text);
+    }
+    header p {
+      margin-top: 0.5rem;
+      font-size: 1rem;
+      font-weight: 300;
+      color: #555;
+    }
+    #resultsContainer {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      width: 100%;
+      max-width: 1000px;
+      margin: var(--gap) auto;
+    }
+    #formContainer {
       width: 100%;
       max-width: 600px;
+      background: var(--card-bg);
+      padding: var(--gap);
+      margin: var(--gap) auto var(--gap) auto;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-
-    #memeForm {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background-color: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      width: 100%;
-    }
-
-    #query {
-      padding: 12px;
-      font-size: 16px;
-      width: 100%;
-      margin-bottom: 20px;
-      border: 2px solid #ccc;
-      border-radius: 8px;
-      outline: none;
-      transition: border-color 0.3s;
-    }
-
-    #query:focus {
-      border-color: #007BFF;
-    }
-
-    button {
-      background-color: #007BFF;
-      color: white;
-      padding: 12px 25px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    #results {
-      margin-top: 30px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-      width: 100%;
-      max-height: 300px; /* Limit the height of the results section */
-      overflow-y: auto; /* Allow scrolling if the results exceed the container height */
-    }
-
-    #results li {
-      list-style: none;
+    #formContainer h2 {
+      margin-bottom: var(--gap);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 300;
+      font-size: 1.25rem;
+      color: var(--text);
       text-align: center;
     }
+    #memeForm {
+      display: flex;
+      gap: var(--gap);
+    }
+    #query {
+      flex: 1;
+      padding: 12px 16px;
+      font-size: 1rem;
+      border: 2px solid #ccc;
+      border-radius: var(--radius);
+      transition: border-color var(--transition);
+    }
+    #query:focus { border-color: var(--primary); outline: none; }
+    button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0 24px;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    button:disabled { background: #aaccee; cursor: not-allowed; }
+    button:hover:not(:disabled) { background: #357ab8; }
 
-    #results img {
-      max-width: 100%;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    #loader {
+      display: none;
+      margin: var(--gap) auto;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 40px; height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #results {
+      width: 100%;
+      max-width: 1000px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--gap);
+      list-style: none;
+      padding: 0;
+    }
+    .meme-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--transition);
+      position: relative;
+    }
+    .meme-card:hover { transform: translateY(-4px); }
+    .meme-card img {
+      width: 100%;
+      object-fit: cover;
+      aspect-ratio: 1;
+    }
+    .meme-card code {
+      padding: var(--gap);
+      font-size: 0.9rem;
+      color: var(--text);
+      word-wrap: break-word;
+    }
+    .no-memes {
+      grid-column: 1/-1;
+      text-align: center;
+      font-size: 1.2rem;
+      color: #e74c3c;
     }
 
-    #results code {
-      display: block;
-      margin-top: 10px;
-      font-size: 14px;
-      color: #555;
+    /* Modal backdrop and content styles */
+    #modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.8);
+      align-items: center;
+      justify-content: center;
+    }
+    #modal img {
+      max-width: 90%;
+      max-height: 90%;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    #modal .close {
+      position: absolute;
+      top: 20px; right: 30px;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+
+    /* Dark mode theme variables and switch styles */
+    .theme-switch-wrapper {
+      position: absolute;
+      top: var(--gap);
+      right: var(--gap);
+      display: flex;
+      align-items: center;
+    }
+    .theme-switch {
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+      position: relative;
+    }
+    .theme-switch input {
+      display: none;
+    }
+    .theme-switch .slider {
+      background: #ccc;
+      border-radius: 34px;
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      transition: background .4s;
+    }
+    .theme-switch .slider:before {
+      content: "";
+      position: absolute;
+      width: 20px; height: 20px;
+      left: 2px; bottom: 2px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform .4s;
+    }
+    .theme-switch input:checked + .slider {
+      background: #666;
+    }
+    .theme-switch input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    .switch-label {
+      margin-right: 8px;
+      font-size: 0.9rem;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* History section styling */
+    #historyContainer, #favoritesContainer {
+      width: 100%; max-width: 1000px;
+      margin: var(--gap) auto;
+    }
+    #historyContainer h2, #favoritesContainer h2 {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 300;
+      font-size: 1.5rem;
+      color: var(--text);
+      margin-bottom: var(--gap);
+      margin-top: var(--gap);
+    }
+    #historyList {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+      list-style: none;
+      padding: 0;
+    }
+    #historyList .meme-card code {
+      padding: var(--gap);
+      font-size: 0.9rem;
+      color: var(--text);
       word-wrap: break-word;
     }
 
-    .no-memes {
-      color: #ff0000;
-      font-size: 18px;
-      text-align: center;
+    /* Favorite icon on cards */
+    .favorite-icon {
+      position: absolute;
+      top: 8px; right: 8px;
+      font-size: 1.5rem;
+      color: rgba(255,255,255,0.8);
+      text-shadow: 0 0 4px rgba(0,0,0,0.7);
+      cursor: pointer;
+    }
+    .favorite-icon.active {
+      color: gold;
+    }
+
+    /* Favorites section */
+    #favoritesContainer {
+      width: 100%; max-width: 1000px;
+      margin: var(--gap) auto;
+    }
+    #favorites {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--gap);
+      list-style: none;
+      padding: 0;
+      overflow-y: auto;
+      max-height: 70vh;
+    }
+
+    /* Dim overlay */
+    #overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity var(--transition), visibility var(--transition);
+      z-index: 1000;
+    }
+    #overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Menu drawer */
+    #menu {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background: var(--card-bg);
+      transition: left var(--transition);
+      box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+      /* bring menu above most content */
+      z-index: 2000;
+    }
+    #menu.open {
+      left: 0;
+      transform: none !important;
+    }
+
+    .hidden { display: none; }
+    .menu-wrapper { position: absolute; top: var(--gap); left: var(--gap); z-index: 1002; }
+    #menu .menu-item { padding: 8px 16px; cursor: pointer; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    #menu .menu-item:hover { background: var(--secondary); }
+
+    /* Toast notification */
+    #toast {
+      position: fixed;
+      bottom: var(--gap);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: var(--card-bg);
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      opacity: 0;
+      transition: opacity var(--transition);
+      pointer-events: none;
+      z-index: 2002;
     }
   </style>
 </head>
 <body>
+  <header>
+    <h1>MEMEMATCH</h1>
+    <p>Your AI Meme Recommendation Assistant. Just type and enjoy.</p>
+    <div class="theme-switch-wrapper">
+      <span class="switch-label">Dark Mode</span>
+      <label class="theme-switch">
+        <input type="checkbox" id="theme-toggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="menu-wrapper">
+      <button id="menu-toggle" aria-label="Menu">☰</button>
+    </div>
+  </header>
 
-  <div id="formContainer">
-    <h2>Ask for a Meme</h2>
-    <form id="memeForm">
-      <input type="text" id="query" placeholder="Enter your meme request" required>
-      <button type="submit">Get Memes</button>
-    </form>
+  <section id="resultsContainer">
+    <section id="formContainer" aria-labelledby="formTitle">
+      <h2 id="formTitle">Enter your meme request here</h2>
+      <form id="memeForm">
+        <input
+          type="text"
+          id="query"
+          placeholder="e.g. 'Gimme a sarcastic Zoom fatigue meme'"
+          aria-label="Your meme request"
+          required
+        >
+        <button type="submit">Get Memes</button>
+      </form>
+      <div id="loader" role="status" aria-label="Loading"></div>
+    </section>
+    <ul id="results" aria-live="polite"></ul>
+  </section>
+
+  <!-- Favorites section -->
+  <section id="favoritesContainer" class="hidden">
+    <h2>Favorites</h2>
+    <ul id="favorites" aria-live="polite"></ul>
+  </section>
+
+  <!-- History section -->
+  <section id="historyContainer" class="hidden">
+    <h2>History</h2>
+    <ul id="historyList" aria-live="polite"></ul>
+  </section>
+
+  <!-- About section -->
+  <section id="aboutContainer" class="hidden">
+    <h2>About</h2>
+    <p>Version: 1.0.0</p>
+    <p>Date created: April 21, 2025</p>
+  </section>
+
+  <!-- Modal container for full-size display -->
+  <div id="modal">
+    <span class="close" aria-label="Close">&times;</span>
+    <img id="modal-img" alt="Full-size meme">
   </div>
 
-  <h3>Results:</h3>
-  <ul id="results"></ul>
+  <!-- Overlay for menu -->
+  <div id="overlay"></div>
+
+  <!-- Menu drawer -->
+  <div id="menu">
+    <div class="menu-item" data-section="results">Results</div>
+    <div class="menu-item" data-section="favorites">Favorites</div>
+    <div class="menu-item" data-section="history">History</div>
+    <div class="menu-item" data-section="about">About</div>
+  </div>
+
+  <!-- Toast for copy feedback -->
+  <div id="toast"></div>
 
   <script>
+    // Utility: get and set JSON in localStorage
+    function loadStorage(key) {
+      try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; }
+    }
+    function saveStorage(key, arr) {
+      localStorage.setItem(key, JSON.stringify(arr));
+    }
+
+    // Toast feedback function
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.opacity = '1';
+      setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+    }
+
+    // Render history items
+    function renderHistory() {
+      const list = document.getElementById('historyList');
+      list.innerHTML = '';
+      const items = loadStorage('meme_history');
+      if (items.length === 0) {
+        list.innerHTML = '<li class="no-memes">No history yet.</li>';
+        return;
+      }
+      items.forEach(q => {
+        const li = document.createElement('li');
+        li.className = 'meme-card';
+        li.innerHTML = `<code>${q}</code>`;
+        li.addEventListener('click', () => {
+          navigator.clipboard.writeText(q)
+            .then(() => showToast('Copied!'))
+            .catch(err => {
+              console.error('Copy failed', err);
+              showToast('Copy failed');
+            });
+        });
+        list.appendChild(li);
+      });
+    }
+
+    // Update history on new query
+    function updateHistory(q) {
+      let items = loadStorage('meme_history');
+      items = [q, ...items.filter(x => x !== q)].slice(0, 5);
+      saveStorage('meme_history', items);
+      renderHistory();
+    }
+
+    // Render favorites section
+    function renderFavorites() {
+      const favList = document.getElementById('favorites');
+      favList.innerHTML = '';
+      const favs = loadStorage('favorites');
+      if (favs.length === 0) {
+        favList.innerHTML = '<li class="no-memes">No favorites yet.</li>';
+        return;
+      }
+      favs.forEach(src => {
+      const li = document.createElement('li');
+      li.className = 'meme-card';
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = 'Favorite meme';
+      const code = document.createElement('code');
+      code.textContent = src.split('/').pop();
+      li.appendChild(img);
+      li.appendChild(code);
+        const favIcon = document.createElement('div');
+        favIcon.className = 'favorite-icon active';
+        favIcon.textContent = '★';
+        favIcon.addEventListener('click', e => {
+          e.stopPropagation();
+          let list = loadStorage('favorites');
+          list = list.filter(x => x !== src);
+          saveStorage('favorites', list);
+          renderFavorites(); // re-render favorites
+          showToast('Removed from favorites');
+        });
+        li.appendChild(favIcon);
+        li.addEventListener('click', () => {
+          const modal = document.getElementById('modal');
+          document.getElementById('modal-img').src = src;
+          modal.style.display = 'flex';
+        });
+        favList.appendChild(li);
+      });
+    }
+
+    // Initialize history and favorites on load
+    renderHistory();
+    renderFavorites();
+
     const form = document.getElementById('memeForm');
     const results = document.getElementById('results');
+    const loader = document.getElementById('loader');
+    const button = form.querySelector('button');
+    const formContainer = document.getElementById('formContainer');
+    const resultsList = document.getElementById('results');
 
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', async e => {
       e.preventDefault();
-      results.innerHTML = "";
-      const query = document.getElementById('query').value;
+      results.innerHTML = '';
+      button.disabled = true;
+      loader.style.display = 'block';
 
-      const response = await fetch('/recommend', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ query })
-      });
-
-      const data = await response.json();
-      if (data.memes && data.memes.length > 0) {
-        data.memes.forEach(meme => {
-          const li = document.createElement('li');
-          li.innerHTML = `<img src="${meme}" alt="Meme"><code>${meme}</code>`;
-          results.appendChild(li);
+      try {
+        const resp = await fetch('/recommend', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ query: document.getElementById('query').value })
         });
-      } else {
-        results.innerHTML = "<li class='no-memes'>No memes found.</li>";
+        const data = await resp.json();
+
+        if (data.memes && data.memes.length) {
+          data.memes.forEach(src => {
+            const card = document.createElement('li');
+            card.className = 'meme-card';
+            card.innerHTML = `
+              <img src="${src}" alt="Meme image">
+              <code>${src.split('/').pop()}</code>
+            `;
+            // open modal on card click
+            card.addEventListener('click', () => {
+              const modal = document.getElementById('modal');
+              const modalImg = document.getElementById('modal-img');
+              modalImg.src = src;
+              modal.style.display = 'flex';
+            });
+
+            // add favorite toggle
+            const favIcon = document.createElement('div');
+            favIcon.className = 'favorite-icon';
+            const favs = loadStorage('favorites');
+            const isFav = favs.includes(src);
+            favIcon.textContent = isFav ? '★' : '☆';
+            if (isFav) favIcon.classList.add('active');
+            favIcon.addEventListener('click', e => {
+              e.stopPropagation();
+              let list = loadStorage('favorites');
+              if (list.includes(src)) {
+                list = list.filter(x => x !== src);
+                favIcon.textContent = '☆'; favIcon.classList.remove('active');
+              } else {
+                list.push(src);
+                favIcon.textContent = '★'; favIcon.classList.add('active');
+              }
+              saveStorage('favorites', list);
+              renderFavorites();
+              // switch to favorites view
+              document.getElementById('resultsContainer').classList.add('hidden');
+              document.getElementById('favoritesContainer').classList.remove('hidden');
+            });
+            card.appendChild(favIcon);
+
+            results.appendChild(card);
+          });
+        } else {
+          results.innerHTML = '<li class="no-memes">No memes found.</li>';
+        }
+        updateHistory(document.getElementById('query').value);
+      } catch (err) {
+        results.innerHTML = '<li class="no-memes">Oops! Something went wrong.</li>';
+      } finally {
+        loader.style.display = 'none';
+        button.disabled = false;
       }
+    });
+
+    // Menu toggle and section navigation
+    const menuToggle = document.getElementById('menu-toggle');
+    const menu = document.getElementById('menu');
+    const overlay = document.getElementById('overlay');
+    const sections = {
+      results: document.getElementById('resultsContainer'),
+      favorites: document.getElementById('favoritesContainer'),
+      history: document.getElementById('historyContainer'),
+      about: document.getElementById('aboutContainer')
+    };
+    // Toggle menu display
+    menuToggle.addEventListener('click', e => {
+      e.stopPropagation();
+      menu.classList.add('open');
+      overlay.classList.add('visible');
+    });
+    // Close menu clicking outside
+    overlay.addEventListener('click', () => {
+      menu.classList.remove('open');
+      overlay.classList.remove('visible');
+    });
+    // Menu item click to show only the selected section
+    const resultsContainer = document.getElementById('resultsContainer');
+    const favoritesContainer = document.getElementById('favoritesContainer');
+    const historyContainer = document.getElementById('historyContainer');
+    const aboutContainer = document.getElementById('aboutContainer');
+    document.querySelectorAll('#menu .menu-item').forEach(item => {
+      item.addEventListener('click', e => {
+        e.stopPropagation();
+        const section = e.target.getAttribute('data-section');
+        resultsList.innerHTML = ''; // Clear results when switching away
+        // Hide all sections
+        resultsContainer.classList.add('hidden');
+        favoritesContainer.classList.add('hidden');
+        historyContainer.classList.add('hidden');
+        aboutContainer.classList.add('hidden');
+        // Show only the selected one
+        if (section === 'results') {
+          resultsContainer.classList.remove('hidden');
+          formContainer.classList.remove('hidden');
+        }
+        if (section === 'favorites') favoritesContainer.classList.remove('hidden');
+        if (section === 'history') historyContainer.classList.remove('hidden');
+        if (section === 'about') aboutContainer.classList.remove('hidden');
+        if (section !== 'results') {
+          formContainer.classList.add('hidden');
+        }
+        // Close menu and overlay
+        menu.classList.remove('open');
+        overlay.classList.remove('visible');
+      });
+    });
+
+    // add modal close behavior
+    const modal = document.getElementById('modal');
+    modal.querySelector('.close').addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+    modal.addEventListener('click', e => {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+
+    // Theme toggle logic
+    const toggle = document.getElementById('theme-toggle');
+    // apply saved theme or default to light
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    toggle.checked = savedTheme === 'dark';
+    toggle.addEventListener('change', () => {
+      const theme = toggle.checked ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
     });
   </script>
 </body>
