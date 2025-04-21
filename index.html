@@ -221,11 +221,11 @@
     }
 
     /* History section styling */
-    #historyContainer, #favoritesContainer {
+    #historyContainer {
       width: 100%; max-width: 1000px;
       margin: var(--gap) auto;
     }
-    #historyContainer h2, #favoritesContainer h2 {
+    #historyContainer h2 {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       font-weight: 300;
       font-size: 1.5rem;
@@ -245,34 +245,6 @@
       font-size: 0.9rem;
       color: var(--text);
       word-wrap: break-word;
-    }
-
-    /* Favorite icon on cards */
-    .favorite-icon {
-      position: absolute;
-      top: 8px; right: 8px;
-      font-size: 1.5rem;
-      color: rgba(255,255,255,0.8);
-      text-shadow: 0 0 4px rgba(0,0,0,0.7);
-      cursor: pointer;
-    }
-    .favorite-icon.active {
-      color: gold;
-    }
-
-    /* Favorites section */
-    #favoritesContainer {
-      width: 100%; max-width: 1000px;
-      margin: var(--gap) auto;
-    }
-    #favorites {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--gap);
-      list-style: none;
-      padding: 0;
-      overflow-y: auto;
-      max-height: 70vh;
     }
 
     /* Dim overlay */
@@ -365,12 +337,6 @@
     <ul id="results" aria-live="polite"></ul>
   </section>
 
-  <!-- Favorites section -->
-  <section id="favoritesContainer" class="hidden">
-    <h2>Favorites</h2>
-    <ul id="favorites" aria-live="polite"></ul>
-  </section>
-
   <!-- History section -->
   <section id="historyContainer" class="hidden">
     <h2>History</h2>
@@ -396,7 +362,6 @@
   <!-- Menu drawer -->
   <div id="menu">
     <div class="menu-item" data-section="results">Results</div>
-    <div class="menu-item" data-section="favorites">Favorites</div>
     <div class="menu-item" data-section="history">History</div>
     <div class="menu-item" data-section="about">About</div>
   </div>
@@ -454,50 +419,6 @@
       renderHistory();
     }
 
-    // Render favorites section
-    function renderFavorites() {
-      const favList = document.getElementById('favorites');
-      favList.innerHTML = '';
-      const favs = loadStorage('favorites');
-      if (favs.length === 0) {
-        favList.innerHTML = '<li class="no-memes">No favorites yet.</li>';
-        return;
-      }
-      favs.forEach(src => {
-      const li = document.createElement('li');
-      li.className = 'meme-card';
-      const img = document.createElement('img');
-      img.src = src;
-      img.alt = 'Favorite meme';
-      const code = document.createElement('code');
-      code.textContent = src.split('/').pop();
-      li.appendChild(img);
-      li.appendChild(code);
-        const favIcon = document.createElement('div');
-        favIcon.className = 'favorite-icon active';
-        favIcon.textContent = '★';
-        favIcon.addEventListener('click', e => {
-          e.stopPropagation();
-          let list = loadStorage('favorites');
-          list = list.filter(x => x !== src);
-          saveStorage('favorites', list);
-          renderFavorites(); // re-render favorites
-          showToast('Removed from favorites');
-        });
-        li.appendChild(favIcon);
-        li.addEventListener('click', () => {
-          const modal = document.getElementById('modal');
-          document.getElementById('modal-img').src = src;
-          modal.style.display = 'flex';
-        });
-        favList.appendChild(li);
-      });
-    }
-
-    // Initialize history and favorites on load
-    renderHistory();
-    renderFavorites();
-
     const form = document.getElementById('memeForm');
     const results = document.getElementById('results');
     const loader = document.getElementById('loader');
@@ -535,31 +456,6 @@
               modal.style.display = 'flex';
             });
 
-            // add favorite toggle
-            const favIcon = document.createElement('div');
-            favIcon.className = 'favorite-icon';
-            const favs = loadStorage('favorites');
-            const isFav = favs.includes(src);
-            favIcon.textContent = isFav ? '★' : '☆';
-            if (isFav) favIcon.classList.add('active');
-            favIcon.addEventListener('click', e => {
-              e.stopPropagation();
-              let list = loadStorage('favorites');
-              if (list.includes(src)) {
-                list = list.filter(x => x !== src);
-                favIcon.textContent = '☆'; favIcon.classList.remove('active');
-              } else {
-                list.push(src);
-                favIcon.textContent = '★'; favIcon.classList.add('active');
-              }
-              saveStorage('favorites', list);
-              renderFavorites();
-              // switch to favorites view
-              document.getElementById('resultsContainer').classList.add('hidden');
-              document.getElementById('favoritesContainer').classList.remove('hidden');
-            });
-            card.appendChild(favIcon);
-
             results.appendChild(card);
           });
         } else {
@@ -580,7 +476,6 @@
     const overlay = document.getElementById('overlay');
     const sections = {
       results: document.getElementById('resultsContainer'),
-      favorites: document.getElementById('favoritesContainer'),
       history: document.getElementById('historyContainer'),
       about: document.getElementById('aboutContainer')
     };
@@ -597,7 +492,6 @@
     });
     // Menu item click to show only the selected section
     const resultsContainer = document.getElementById('resultsContainer');
-    const favoritesContainer = document.getElementById('favoritesContainer');
     const historyContainer = document.getElementById('historyContainer');
     const aboutContainer = document.getElementById('aboutContainer');
     document.querySelectorAll('#menu .menu-item').forEach(item => {
@@ -607,7 +501,6 @@
         resultsList.innerHTML = ''; // Clear results when switching away
         // Hide all sections
         resultsContainer.classList.add('hidden');
-        favoritesContainer.classList.add('hidden');
         historyContainer.classList.add('hidden');
         aboutContainer.classList.add('hidden');
         // Show only the selected one
@@ -615,7 +508,6 @@
           resultsContainer.classList.remove('hidden');
           formContainer.classList.remove('hidden');
         }
-        if (section === 'favorites') favoritesContainer.classList.remove('hidden');
         if (section === 'history') historyContainer.classList.remove('hidden');
         if (section === 'about') aboutContainer.classList.remove('hidden');
         if (section !== 'results') {

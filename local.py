@@ -8,8 +8,6 @@ import imagehash
 from PIL import Image
 import shutil
 
-from sklearn.metrics.pairwise import cosine_similarity
-
 df_filename_noTemplate_local = pd.read_csv("filenames/filenames_noTemplate_local.csv", names=["Filename"])
 df_filename_noTemplate_global = pd.read_csv("filenames/filenames_noTemplate_global.csv", names=["Filename"])
 df_filename_withTemplate = pd.read_csv("filenames/filenames_withTemplate.csv", names=["Filename"])
