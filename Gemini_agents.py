@@ -116,5 +116,5 @@ def process_user_input(user_input):
 
 
 # if __name__ == "__main__":
-#     user_input = "Give me a meme to cheer me up after a long day of hard work."
+#     user_input = "Give me some hilarious memes"
 #     process_user_input(user_input)

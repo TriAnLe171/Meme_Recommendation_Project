@@ -10,6 +10,10 @@ from fastapi.responses import HTMLResponse
 from pyngrok import ngrok, conf
 from API_keys import key_ngrok
 
+# Define absolute path for results directory
+BASE_DIR = os.path.dirname(__file__)
+RESULTS_DIR = os.path.join(BASE_DIR, "results")
+
 app = FastAPI()
 
 class QueryRequest(BaseModel):
@@ -31,9 +35,16 @@ def recommend(req: QueryRequest):
     search_by = details.get("recommendation_focus", "Global").capitalize() if has_topic else None
     sentiment_preference = details.get("sentiment_preference", "neutral") if not has_topic and not has_usage else None
     
-    results_dir = "results"
-    shutil.rmtree(results_dir)
-    os.makedirs(results_dir, exist_ok=True)
+    # Clear out only the contents of the results directory so StaticFiles mount stays valid
+    if not os.path.exists(RESULTS_DIR):
+        os.makedirs(RESULTS_DIR, exist_ok=True)
+    else:
+        for entry in os.listdir(RESULTS_DIR):
+            path = os.path.join(RESULTS_DIR, entry)
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+            else:
+                os.remove(path)
 
     recommended_memes = local.get_similar_memes(
         topics=topics_str,
@@ -51,13 +62,15 @@ def recommend(req: QueryRequest):
         "details": details
     }
 
+## Mount static files from the absolute results directory
+app.mount("/static", StaticFiles(directory=RESULTS_DIR), name="static")
 
-if os.path.exists("results"):
-    app.mount("/static", StaticFiles(directory="results"), name="static")
+# Serve UI_images (profile pictures and other assets)
+app.mount("/UI_images", StaticFiles(directory=os.path.join(BASE_DIR, "UI_images")), name="UI_images")
 
 @app.get("/", response_class=HTMLResponse)
 def index():
-    with open("index.html", "r") as f:
+    with open(os.path.join(BASE_DIR, "index.html"), "r") as f:
         return f.read()
 
 if __name__ == "__main__":

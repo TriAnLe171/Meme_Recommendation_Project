@@ -233,6 +233,10 @@
       margin-bottom: var(--gap);
       margin-top: var(--gap);
     }
+    #clearHistoryBtn {
+      display: inline-block;
+      margin-bottom: calc(var(--gap) * 1.5);
+    }
     #historyList {
       display: flex;
       flex-direction: column;
@@ -246,6 +250,10 @@
       color: var(--text);
       word-wrap: break-word;
     }
+    /* Delete button for history items */
+    .delete-btn { background: transparent; border: none; color: #e74c3c; font-size: 1rem; cursor: pointer; margin-left: auto; }
+    /* Flex container for history items */
+    .history-item { display: flex; align-items: center; }
 
     /* Dim overlay */
     #overlay {
@@ -281,7 +289,7 @@
       transform: none !important;
     }
 
-    .hidden { display: none; }
+    .hidden { display: none !important; }
     .menu-wrapper { position: absolute; top: var(--gap); left: var(--gap); z-index: 1002; }
     #menu .menu-item { padding: 8px 16px; cursor: pointer; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     #menu .menu-item:hover { background: var(--secondary); }
@@ -300,6 +308,76 @@
       transition: opacity var(--transition);
       pointer-events: none;
       z-index: 2002;
+    }
+
+    /* About section modern styling */
+    #aboutContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--card-bg);
+      padding: var(--gap);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 800px;
+      margin: var(--gap) auto;
+      text-align: center;
+    }
+    #aboutContainer .about-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--gap);
+    }
+    @media (min-width: 600px) {
+      #aboutContainer .about-content {
+        flex-direction: row;
+        text-align: left;
+      }
+    }
+    #aboutContainer .profile-img img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    #aboutContainer .profile-info .name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    #aboutContainer .profile-info .contact a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    #aboutContainer .profile-info .contact a:hover {
+      color: #357ab8;
+    }
+    #aboutContainer .app-meta {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(0,0,0,0.1);
+      text-align: left;
+      padding-left: 16px;
+      font-size: 0.9rem;
+      color: #888;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      width: 100%;
+    }
+    @media (max-width: 600px) {
+      #aboutContainer .app-meta {
+        text-align: center;
+        padding-left: 0;
+      }
+    }
+    [data-theme="dark"] #aboutContainer .app-meta {
+      border-top-color: rgba(255,255,255,0.1);
+      color: #aaa;
+    }
+
+    #aboutContainer .app-meta p {
+      margin: 4px 0;
     }
   </style>
 </head>
@@ -340,14 +418,32 @@
   <!-- History section -->
   <section id="historyContainer" class="hidden">
     <h2>History</h2>
+    <button id="clearHistoryBtn">Clear All</button>
     <ul id="historyList" aria-live="polite"></ul>
   </section>
 
   <!-- About section -->
   <section id="aboutContainer" class="hidden">
     <h2>About</h2>
-    <p>Version: 1.0.0</p>
-    <p>Date created: April 21, 2025</p>
+    <div class="about-content">
+      <div class="profile-img">
+        <img src="/UI_images/Tri%20An%20headshot.png" alt="Tri An Le">
+      </div>
+      <div class="profile-info">
+        <p class="name">Tri An Le</p>
+        <p class="role">Data Science & AI Enthusiast</p>
+        <div class="contact">
+          <p>Email: <a href="mailto:triandole@gmail.com">triandole@gmail.com</a></p>
+          <p>Contact: <a href="tel:+1 (765) 350 9132">+1 765 350 9132</a></p>
+          <p>LinkedIn: <a href="https://www.linkedin.com/in/trianle/" target="_blank">https://www.linkedin.com/in/trianle/</a></p>
+        </div>
+      </div>
+    </div>
+    <div class="app-meta">
+      <p class="version">Version 1.0.0</p>
+      <p class="created">Created: April 2025</p>
+      <p class="copyright">© 2025 MEMEMATCH. All rights reserved.</p>
+    </div>
   </section>
 
   <!-- Modal container for full-size display -->
@@ -398,18 +494,40 @@
       items.forEach(q => {
         const li = document.createElement('li');
         li.className = 'meme-card';
-        li.innerHTML = `<code>${q}</code>`;
-        li.addEventListener('click', () => {
+        li.innerHTML = `
+          <div class="history-item">
+            <code>${q}</code>
+            <button class="delete-btn" aria-label="Delete history item">-</button>
+          </div>`;
+        // copy on code click
+        li.querySelector('code').addEventListener('click', () => {
           navigator.clipboard.writeText(q)
             .then(() => showToast('Copied!'))
-            .catch(err => {
-              console.error('Copy failed', err);
-              showToast('Copy failed');
-            });
+            .catch(() => showToast('Copy failed'));
+        });
+        // delete individual item
+        li.querySelector('.delete-btn').addEventListener('click', e => {
+          e.stopPropagation();
+          deleteHistoryItem(q);
         });
         list.appendChild(li);
       });
     }
+
+    // Delete a single history item
+    function deleteHistoryItem(q) {
+      const items = loadStorage('meme_history').filter(x => x !== q);
+      saveStorage('meme_history', items);
+      renderHistory();
+      showToast('Removed');
+    }
+
+    // Clear all history
+    document.getElementById('clearHistoryBtn').addEventListener('click', () => {
+      saveStorage('meme_history', []);
+      renderHistory();
+      showToast('History cleared');
+    });
 
     // Update history on new query
     function updateHistory(q) {
@@ -490,29 +608,18 @@
       menu.classList.remove('open');
       overlay.classList.remove('visible');
     });
-    // Menu item click to show only the selected section
-    const resultsContainer = document.getElementById('resultsContainer');
-    const historyContainer = document.getElementById('historyContainer');
-    const aboutContainer = document.getElementById('aboutContainer');
+    // Replace manual section toggling with unified logic
     document.querySelectorAll('#menu .menu-item').forEach(item => {
       item.addEventListener('click', e => {
         e.stopPropagation();
-        const section = e.target.getAttribute('data-section');
+        const key = e.target.getAttribute('data-section');
         resultsList.innerHTML = ''; // Clear results when switching away
         // Hide all sections
-        resultsContainer.classList.add('hidden');
-        historyContainer.classList.add('hidden');
-        aboutContainer.classList.add('hidden');
-        // Show only the selected one
-        if (section === 'results') {
-          resultsContainer.classList.remove('hidden');
-          formContainer.classList.remove('hidden');
-        }
-        if (section === 'history') historyContainer.classList.remove('hidden');
-        if (section === 'about') aboutContainer.classList.remove('hidden');
-        if (section !== 'results') {
-          formContainer.classList.add('hidden');
-        }
+        Object.values(sections).forEach(sec => sec.classList.add('hidden'));
+        // Show only the selected section
+        if (sections[key]) sections[key].classList.remove('hidden');
+        // Toggle form container for results tab
+        formContainer.classList.toggle('hidden', key !== 'results');
         // Close menu and overlay
         menu.classList.remove('open');
         overlay.classList.remove('visible');
