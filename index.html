@@ -130,6 +130,66 @@
       position: relative;
     }
     .meme-card:hover { transform: translateY(-4px); }
+    .option-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 36px;
+      height: 36px;
+      background: var(--card-bg);
+      border: none;
+      border-radius: 50% !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: var(--text);
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition), color var(--transition);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      overflow: hidden;
+      padding: 0;
+    }
+    .option-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      background: var(--primary);
+      color: #fff;
+    }
+    .option-dropdown {
+      position: absolute;
+      top: 40px;
+      right: 8px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+      z-index: 2;
+      min-width: 140px;
+      overflow: hidden;
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
+    }
+    .option-dropdown.show {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .option-dropdown a {
+      padding: 12px 18px;
+      font-size: 1.05rem;
+      text-decoration: none;
+      color: var(--text);
+      transition: background var(--transition), color var(--transition);
+      display: block;
+      text-align: left;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .option-dropdown a:hover, .option-dropdown a:focus {
+      background: #f2f2f7;
+      color: #007aff;
+    }
     .meme-card img {
       width: 100%;
       object-fit: cover;
@@ -565,9 +625,19 @@
             card.innerHTML = `
               <img src="${src}" alt="Meme image">
               <code>${src.split('/').pop()}</code>
+              <button class="option-btn" aria-label="Options">⋯</button>
+              <div class="option-dropdown">
+                <a href="#" class="copy-meme">Copy</a>
+                <a href="#" class="save-meme">Save to device</a>
+              </div>
             `;
-            // open modal on card click
-            card.addEventListener('click', () => {
+            // open modal on card click (but not when clicking option button or dropdown)
+            card.addEventListener('click', (e) => {
+              // Prevent modal if option button or dropdown is clicked
+              if (
+                e.target.classList.contains('option-btn') ||
+                e.target.closest('.option-dropdown')
+              ) return;
               const modal = document.getElementById('modal');
               const modalImg = document.getElementById('modal-img');
               modalImg.src = src;
@@ -575,6 +645,47 @@
             });
 
             results.appendChild(card);
+            // Option button dropdown logic
+            const optionBtn = card.querySelector('.option-btn');
+            const dropdown = card.querySelector('.option-dropdown');
+            optionBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              dropdown.classList.toggle('show');
+            });
+            document.addEventListener('click', () => {
+              dropdown.classList.remove('show');
+            });
+
+            // Copy meme functionality
+            card.querySelector('.copy-meme').addEventListener('click', (e) => {
+              e.preventDefault();
+              const img = new Image();
+              img.crossOrigin = 'anonymous';
+              img.src = src;
+              img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                canvas.toBlob((blob) => {
+                  const item = new ClipboardItem({ 'image/png': blob });
+                  navigator.clipboard.write([item])
+                    .then(() => showToast('Copied to clipboard'))
+                    .catch(() => showToast('Copy failed'));
+                }, 'image/png');
+              };
+              img.onerror = () => showToast('Copy failed');
+            });
+
+            // Save meme functionality
+            card.querySelector('.save-meme').addEventListener('click', (e) => {
+              e.preventDefault();
+              const a = document.createElement('a');
+              a.href = src;
+              a.download = src.split('/').pop();
+              a.click();
+            });
           });
         } else {
           results.innerHTML = '<li class="no-memes">No memes found.</li>';
