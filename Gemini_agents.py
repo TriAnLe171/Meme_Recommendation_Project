@@ -9,16 +9,16 @@ from prompts import (
     build_prompt_details,
 )
 
-genai.configure(api_key=key_gemini)  # 🔒 Replace with your actual API key
+genai.configure(api_key=key_gemini) 
 
-model_1 = genai.GenerativeModel("gemini-2.0-flash")
-model_2 = genai.GenerativeModel("gemini-2.0-flash-lite") 
+model_1 = genai.GenerativeModel("gemini-2.5-flash-preview-04-17")
+model_2 = genai.GenerativeModel("gemini-2.0-flash") 
 model_3 = genai.GenerativeModel("gemini-2.5-pro-exp-03-25") 
 
 def predict_template_decision(user_input):
     prompt = build_prompt_template_decision(user_input)
     try:
-        response = model_2.generate_content(prompt)
+        response = model_1.generate_content(prompt)
         answer = response.text.strip().lower()
         # print("\n[DEBUG] Raw Gemini response for template decision:\n", answer)
         if "yes" in answer:
@@ -44,7 +44,7 @@ def predict_topic_presence(user_input):
 def predict_usage_decision(user_input):
     prompt = build_prompt_usage_decision(user_input)
     try:
-        response = model_2.generate_content(prompt)
+        response = model_1.generate_content(prompt)
         answer = response.text.strip().lower()
         # print("\n[DEBUG] Gemini response for usage decision:", answer)
         if "yes" in answer:

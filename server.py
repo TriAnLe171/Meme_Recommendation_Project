@@ -35,7 +35,6 @@ def recommend(req: QueryRequest):
     search_by = details.get("recommendation_focus", "Global").capitalize() if has_topic else None
     sentiment_preference = details.get("sentiment_preference", "neutral") if not has_topic and not has_usage else None
     
-    # Clear out only the contents of the results directory so StaticFiles mount stays valid
     if not os.path.exists(RESULTS_DIR):
         os.makedirs(RESULTS_DIR, exist_ok=True)
     else:
@@ -62,10 +61,7 @@ def recommend(req: QueryRequest):
         "details": details
     }
 
-## Mount static files from the absolute results directory
 app.mount("/static", StaticFiles(directory=RESULTS_DIR), name="static")
-
-# Serve UI_images (profile pictures and other assets)
 app.mount("/UI_images", StaticFiles(directory=os.path.join(BASE_DIR, "UI_images")), name="UI_images")
 
 @app.get("/", response_class=HTMLResponse)
