@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MEMEMATCH</title>
+  <!-- Favicon and web icon for browser tabs and devices -->
+  <link rel="icon" href="UI_images/icons8-meme-96.png" sizes="96x96" type="image/png">
+  <link rel="icon" href="UI_images/icons8-meme-48.png" sizes="48x48" type="image/png">
+  <link rel="apple-touch-icon" href="/UI_images/apple-touch-icon.png" sizes="180x180">
   <style>
     :root {
       --primary: #4a90e2;
@@ -34,6 +38,17 @@
       text-align: center;
       padding: var(--gap) 0;
       margin-bottom: var(--gap * 1.5);
+    }
+    /* Wrap logo and title */
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--gap);
+    }
+    .logo {
+      width: 48px;
+      height: auto;
     }
     header h1 {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -443,7 +458,10 @@
 </head>
 <body>
   <header>
-    <h1>MEMEMATCH</h1>
+    <div class="header-content">
+      <img src="UI_images/icons8-meme-96.png" alt="MEMEMATCH Logo" class="logo">
+      <h1>MEMEMATCH</h1>
+    </div>
     <p>Your AI Meme Recommendation Assistant. Just type and enjoy.</p>
     <div class="theme-switch-wrapper">
       <span class="switch-label">Dark Mode</span>
