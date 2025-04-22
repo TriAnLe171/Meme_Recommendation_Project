@@ -50,7 +50,7 @@ def compute_image_hash(image_path):
                 return None
 
 
-def get_similar_memes(topics = None, need_template=None, usages=None, search_by="Global", sentiment_preference='joy', top_n=20,top_n_template=10):
+def get_similar_memes(topics = None, need_template=None, usages=None, search_by="Global", sentiment_preference='joy', top_n=10, top_n_template=5):
     """Recommend top-N memes based on text input similarity."""
     if topics and usages:
         topic_embedding = text_model.encode(topics).reshape(1, -1)

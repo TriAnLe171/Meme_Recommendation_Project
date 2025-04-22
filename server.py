@@ -18,6 +18,8 @@ app = FastAPI()
 
 class QueryRequest(BaseModel):
     query: str
+    top_n: Optional[int] = 10
+    top_n_template: Optional[int] = 5
 
 @app.post("/recommend")
 def recommend(req: QueryRequest):
@@ -50,7 +52,9 @@ def recommend(req: QueryRequest):
         need_template=need_template,
         usages=usages_str,
         search_by=search_by,
-        sentiment_preference=sentiment_preference
+        sentiment_preference=sentiment_preference,
+        top_n=req.top_n,
+        top_n_template=req.top_n_template
     )
 
     meme_urls = [f"/static/{filename}" for filename in recommended_memes]

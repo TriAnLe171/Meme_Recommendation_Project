@@ -454,6 +454,66 @@
     #aboutContainer .app-meta p {
       margin: 4px 0;
     }
+
+    /* Filter button and dropdown */
+    .filter-wrapper {
+      position: relative;
+      margin-left: var(--gap);
+      display: inline-block;
+    }
+    .filter-btn {
+      background: var(--card-bg);
+      color: var(--text);
+      border: none;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background var(--transition), box-shadow var(--transition);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .filter-btn:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+    .filter-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
+      z-index: 3;
+    }
+    .filter-dropdown.show {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .filter-section {
+      padding: 8px 12px;
+    }
+    .filter-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .filter-dropdown a {
+      display: inline-block;
+      margin: 4px 4px 0 0;
+      padding: 4px 8px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      color: var(--text);
+      transition: background var(--transition);
+    }
+    .filter-dropdown a.selected,
+    .filter-dropdown a:hover {
+      background: var(--primary);
+      color: #fff;
+    }
   </style>
 </head>
 <body>
@@ -487,7 +547,26 @@
           required
         >
         <button type="submit">Get Memes</button>
+        <input type="hidden" id="topN" name="top_n" value="10">
+        <input type="hidden" id="topNTemplate" name="top_n_template" value="5">
       </form>
+      <div class="filter-wrapper">
+        <button type="button" class="filter-btn" id="filterBtn">Memes 10, Templates 5 ▾</button>
+        <div class="filter-dropdown" id="filterDropdown">
+          <div class="filter-section">
+            <div class="filter-title">Memes</div>
+            <a href="#" data-type="memes" data-value="10" class="selected">10</a>
+            <a href="#" data-type="memes" data-value="20">20</a>
+            <a href="#" data-type="memes" data-value="50">50</a>
+          </div>
+          <div class="filter-section">
+            <div class="filter-title">Templates</div>
+            <a href="#" data-type="templates" data-value="5" class="selected">5</a>
+            <a href="#" data-type="templates" data-value="10">10</a>
+            <a href="#" data-type="templates" data-value="20">20</a>
+          </div>
+        </div>
+      </div>
       <div id="loader" role="status" aria-label="Loading"></div>
     </section>
     <ul id="results" aria-live="polite"></ul>
@@ -544,6 +623,9 @@
   <div id="toast"></div>
 
   <script>
+    // track whether the latest results are templates or memes
+    let currentNeedTemplate = null;
+
     // Utility: get and set JSON in localStorage
     function loadStorage(key) {
       try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; }
@@ -632,9 +714,16 @@
         const resp = await fetch('/recommend', {
           method: 'POST',
           headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ query: document.getElementById('query').value })
+          body: JSON.stringify({
+            query: document.getElementById('query').value,
+            top_n: Number(document.getElementById('topN').value),
+            top_n_template: Number(document.getElementById('topNTemplate').value)
+          })
         });
         const data = await resp.json();
+
+        // remember if server returned templates or memes
+        currentNeedTemplate = data.need_template;
 
         if (data.memes && data.memes.length) {
           data.memes.forEach(src => {
@@ -774,6 +863,48 @@
       const theme = toggle.checked ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem('theme', theme);
+    });
+
+    // Filter dropdown logic
+    const filterBtn = document.getElementById('filterBtn');
+    const filterDropdown = document.getElementById('filterDropdown');
+    filterBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      filterDropdown.classList.toggle('show');
+    });
+    document.addEventListener('click', () => {
+      filterDropdown.classList.remove('show');
+    });
+    filterDropdown.querySelectorAll('a').forEach(item => {
+      item.addEventListener('click', e => {
+        e.preventDefault();
+        const type = item.getAttribute('data-type');
+        const value = item.getAttribute('data-value');
+        // update UI selection
+        filterDropdown.querySelectorAll(`a[data-type="${type}"]`).forEach(x => x.classList.remove('selected'));
+        item.classList.add('selected');
+        // update hidden inputs
+        if (type === 'memes') {
+          document.getElementById('topN').value = value;
+        } else {
+          document.getElementById('topNTemplate').value = value;
+        }
+        // update button label showing both counts
+        const memesValue = document.getElementById('topN').value;
+        const templatesValue = document.getElementById('topNTemplate').value;
+        filterBtn.textContent = `Memes ${memesValue}, Templates ${templatesValue} ▾`;
+        // auto-refresh only if changing the active result type
+        const shouldRefresh = currentNeedTemplate === null ||
+          (type === 'memes' && !currentNeedTemplate) ||
+          (type === 'templates' && currentNeedTemplate);
+        if (shouldRefresh) {
+          if (typeof form.requestSubmit === 'function') {
+            form.requestSubmit();
+          } else {
+            form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+          }
+        }
+      });
     });
   </script>
 </body>
