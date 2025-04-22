@@ -552,7 +552,7 @@
         <input type="hidden" id="topNTemplate" name="top_n_template" value="5">
       </form>
       <div class="filter-wrapper">
-        <button type="button" class="filter-btn" id="filterBtn">Memes 10, Templates 5 ▾</button>
+        <button type="button" class="filter-btn" id="filterBtn">Memes: 10, Templates: 5 ▾</button>
         <div class="filter-dropdown" id="filterDropdown">
           <div class="filter-section">
             <div class="filter-title">Memes</div>
@@ -893,7 +893,7 @@
         // update button label showing both counts
         const memesValue = document.getElementById('topN').value;
         const templatesValue = document.getElementById('topNTemplate').value;
-        filterBtn.textContent = `Memes ${memesValue}, Templates ${templatesValue} ▾`;
+        filterBtn.textContent = `Memes: ${memesValue}, Templates: ${templatesValue} ▾`;
         // auto-refresh only if changing the active result type
         const shouldRefresh = currentNeedTemplate === null ||
           (type === 'memes' && !currentNeedTemplate) ||
