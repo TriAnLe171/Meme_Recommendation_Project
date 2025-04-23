@@ -31,7 +31,7 @@ def predict_template_decision(user_input):
 def predict_topic_presence(user_input):
     prompt = build_prompt_topic_presence(user_input)
     try:
-        response = model_1.generate_content(prompt)
+        response = model_3.generate_content(prompt)
         answer = response.text.strip().lower()
         # print("\n[DEBUG] Gemini response for topic presence:", answer)
         if "yes" in answer:
@@ -44,7 +44,7 @@ def predict_topic_presence(user_input):
 def predict_usage_decision(user_input):
     prompt = build_prompt_usage_decision(user_input)
     try:
-        response = model_1.generate_content(prompt)
+        response = model_3.generate_content(prompt)
         answer = response.text.strip().lower()
         # print("\n[DEBUG] Gemini response for usage decision:", answer)
         if "yes" in answer:
