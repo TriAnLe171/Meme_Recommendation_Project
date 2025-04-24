@@ -7,7 +7,7 @@ import csv
 # Load BLIP-2 model
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base").to('cuda')
-input_dir = "/home/hsdslab/Documents/Meme_project_TriAn/all_images_IMGFlip_templates"
+input_dir = "###"
 
 image_files = [f for f in os.listdir(input_dir) if f.endswith((".jpg", ".png"))]
 

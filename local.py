@@ -12,8 +12,8 @@ df_filename_noTemplate_local = pd.read_csv("filenames/filenames_noTemplate_local
 df_filename_noTemplate_global = pd.read_csv("filenames/filenames_noTemplate_global.csv", names=["Filename"])
 df_filename_withTemplate = pd.read_csv("filenames/filenames_withTemplate.csv", names=["Filename"])
 
-meme_dataset_path = "/home/hsdslab/Documents/Meme_project_TriAn/Meme_Recommendation_Final/images"
-meme_template_path = "/home/hsdslab/Documents/Meme_project_TriAn/Meme_Recommendation_Final/all_images_IMGFlip_templates"
+meme_dataset_path = "images"
+meme_template_path = "all_images_IMGFlip_templates"
 
 text_model = SentenceTransformer("all-mpnet-base-v2")
 

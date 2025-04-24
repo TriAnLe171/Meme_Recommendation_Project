@@ -9,7 +9,7 @@ model_name = "cardiffnlp/twitter-roberta-base-emotion-multilabel-latest"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 max_length = tokenizer.model_max_length
 
-df = pd.read_csv('/home/hsdslab/Documents/Meme_project_TriAn/Meme_Recommendation_Final/IMGFLIP_fullcontext_final.csv',header=None,names=["Filename", "Extracted Text + Title"])
+df = pd.read_csv('###',header=None,names=["Filename", "Extracted Text + Title"])
 
 emotion_labels = [
     "joy", "anticipation", "disgust", "sadness", "anger", 
