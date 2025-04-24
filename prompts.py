@@ -37,12 +37,12 @@ You are a meme-recommendation assistant.
 
 Analyze the user's request and answer this question:
 
-    "Does the request mention specific topics or keywords for the recommended memes (such as names, events, issues, objects, or recognizable meme formats)?"
+    "Does the request mention specific topics or keywords for the recommended memes (such as subjects, names, events, issues, objects, or recognizable meme formats)?"
 
 Respond with **only one word**: `yes` or `no`.
 
 Use the following rules:
-• Respond `yes` if the user is clearly interested in specific topics, keywords, or well-known meme formats (e.g., 'college students', 'taxes', 'Elon Musk', 'graduation', 'climate change', 'Two Buttons', 'Distracted Boyfriend').
+• Respond `yes` if the user is clearly interested in specific subjects, topics, keywords, or well-known meme formats (e.g., 'girls', 'college students', 'taxes', 'Elon Musk', 'graduation', 'climate change', 'Two Buttons', 'Distracted Boyfriend').
 • Respond `no` if the request is vague, general, or does not mention any specific subjects or formats.
 • If uncertain, make your best guess based on the language of the request.
 
@@ -51,7 +51,7 @@ Use the following rules:
 Example:
 
 User request:
-\"\"\"Give me Two Buttons meme templates.\"\"\"
+\"\"\"I want a meme which shows girls having too much fun.\"\"\"
 
 Expected answer:
 yes
