@@ -85,7 +85,7 @@ async def recommend_upload(
     file: UploadFile = File(...)
 ):
     # save incoming file
-    tmp_filename = f"tmp_{uuid.uuid4().hex}_{file.filename}"
+    tmp_filename = f"temp_upload/tmp_{uuid.uuid4().hex}_{file.filename}"
     tmp_path = os.path.join(BASE_DIR, tmp_filename)
 
     if not os.path.exists(RESULTS_DIR):
