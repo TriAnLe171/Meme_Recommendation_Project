@@ -125,13 +125,21 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    #results {
+    /* Main results section styling */
+    #resultsSection {
+      width: 100%;
+      max-width: 1000px;
+      margin: var(--gap) auto;
+      padding: 0 var(--gap);
+    }
+    /* Shared grid for results */
+    #results, #uploadResults {
       width: 100%;
       max-width: 1000px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-template-columns: repeat(3, minmax(250px, 1fr));
       gap: var(--gap);
-      list-style: none;
+      justify-content: center;
       padding: 0;
     }
     .meme-card {
@@ -515,6 +523,33 @@
       background: var(--primary);
       color: #fff;
     }
+
+    /* Upload panel styling */
+    #uploadContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 600px;
+      margin: var(--gap) auto;
+      background: var(--card-bg);
+      padding: var(--gap) var(--gap) 8px var(--gap);  /* smaller bottom padding */
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    #uploadForm {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--gap);
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 4px;  /* smaller space below Find Similar */
+    }
+    #uploadResults {
+      /* force 3 columns for upload results */
+      grid-template-columns: repeat(3, minmax(250px, 1fr));
+    }
   </style>
 </head>
 <body>
@@ -569,8 +604,12 @@
         </div>
       </div>
       <div id="loader" role="status" aria-label="Loading"></div>
+    </section>  <!-- end of #resultsContainer -->
+
+    <!-- Main search results split into its own section -->
+    <section id="resultsSection">
+      <ul id="results" aria-live="polite"></ul>
     </section>
-    <ul id="results" aria-live="polite"></ul>
   </section>
 
   <!-- History section -->
@@ -604,6 +643,24 @@
     </div>
   </section>
 
+  <!-- Upload section for image-based search -->
+  <section id="uploadContainer" class="hidden">
+    <h2>Upload Meme</h2>
+    <form id="uploadForm">
+      <label><input type="radio" name="context" value="local" checked> Local Context</label>
+      <label><input type="radio" name="context" value="global"> Global Context</label>
+      <input type="file" id="uploadFile" name="file" accept="image/*" required>
+      <button type="submit">Find Similar</button>
+    </form>
+    <div id="uploadLoader" style="display:none; margin: var(--gap) auto;" role="status" aria-label="Loading">
+      <div style="border:4px solid #f3f3f3; border-top:4px solid var(--primary); border-radius:50%; width:40px; height:40px; animation:spin 1s linear infinite;"></div>
+    </div>
+  </section>
+  <!-- Upload results in its own section -->
+  <section id="uploadResultsSection" class="hidden">
+    <ul id="uploadResults" aria-live="polite"></ul>
+  </section>
+
   <!-- Modal container for full-size display -->
   <div id="modal">
     <span class="close" aria-label="Close">&times;</span>
@@ -615,7 +672,8 @@
 
   <!-- Menu drawer -->
   <div id="menu">
-    <div class="menu-item" data-section="results">Results</div>
+    <div class="menu-item" data-section="results">Give Your Request</div>
+    <div class="menu-item" data-section="upload">Find Similar Memes</div>
     <div class="menu-item" data-section="history">History</div>
     <div class="menu-item" data-section="about">About</div>
   </div>
@@ -812,9 +870,12 @@
     const menu = document.getElementById('menu');
     const overlay = document.getElementById('overlay');
     const sections = {
-      results: document.getElementById('resultsContainer'),
+      resultsForm: document.getElementById('formContainer'),
+      resultsResults: document.getElementById('resultsSection'),
       history: document.getElementById('historyContainer'),
-      about: document.getElementById('aboutContainer')
+      about: document.getElementById('aboutContainer'),
+      uploadForm: document.getElementById('uploadContainer'),
+      uploadResults: document.getElementById('uploadResultsSection')
     };
     // Toggle menu display
     menuToggle.addEventListener('click', e => {
@@ -832,17 +893,115 @@
       item.addEventListener('click', e => {
         e.stopPropagation();
         const key = e.target.getAttribute('data-section');
-        resultsList.innerHTML = ''; // Clear results when switching away
         // Hide all sections
         Object.values(sections).forEach(sec => sec.classList.add('hidden'));
-        // Show only the selected section
-        if (sections[key]) sections[key].classList.remove('hidden');
-        // Toggle form container for results tab
-        formContainer.classList.toggle('hidden', key !== 'results');
+        // Show form and results for the selected tab
+        if (key === 'results') {
+          sections.resultsForm.classList.remove('hidden');
+          sections.resultsResults.classList.remove('hidden');
+        } else if (key === 'upload') {
+          sections.uploadForm.classList.remove('hidden');
+          sections.uploadResults.classList.remove('hidden');
+        } else if (key === 'history' || key === 'about') {
+          sections[key].classList.remove('hidden');
+        }
         // Close menu and overlay
         menu.classList.remove('open');
         overlay.classList.remove('visible');
       });
+    });
+
+    // Handle image upload form
+    const uploadForm = document.getElementById('uploadForm');
+    uploadForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const uploadResults = document.getElementById('uploadResults');
+      const uploadLoader = document.getElementById('uploadLoader');
+      const uploadButton = uploadForm.querySelector('button');
+      uploadResults.innerHTML = '';
+      uploadButton.disabled = true;
+      uploadLoader.style.display = 'block';
+      try {
+        const formData = new FormData(uploadForm);
+        const resp = await fetch('/recommend/upload', { method: 'POST', body: formData });
+        const data = await resp.json();
+        if (data.memes && data.memes.length) {
+          data.memes.forEach(src => {
+            const card = document.createElement('li');
+            card.className = 'meme-card';
+            card.innerHTML = `
+              <img src="${src}" alt="Meme image">
+              <code>${src.split('/').pop()}</code>
+              <button class="option-btn" aria-label="Options">⋯</button>
+              <div class="option-dropdown">
+                <a href="#" class="copy-meme">Copy</a>
+                <a href="#" class="save-meme">Save to device</a>
+              </div>
+            `;
+            // open modal on upload card click
+            card.addEventListener('click', e => {
+              if (
+                e.target.classList.contains('option-btn') ||
+                e.target.closest('.option-dropdown')
+              ) return;
+              const modal = document.getElementById('modal');
+              const modalImg = document.getElementById('modal-img');
+              modalImg.src = src;
+              modal.style.display = 'flex';
+            });
+
+            uploadResults.appendChild(card);
+            // Option button dropdown logic
+            const optionBtn = card.querySelector('.option-btn');
+            const dropdown = card.querySelector('.option-dropdown');
+            optionBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              dropdown.classList.toggle('show');
+            });
+            document.addEventListener('click', () => {
+              dropdown.classList.remove('show');
+            });
+
+            // Copy meme functionality
+            card.querySelector('.copy-meme').addEventListener('click', (e) => {
+              e.preventDefault();
+              const img = new Image();
+              img.crossOrigin = 'anonymous';
+              img.src = src;
+              img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                canvas.toBlob((blob) => {
+                  const item = new ClipboardItem({ 'image/png': blob });
+                  navigator.clipboard.write([item])
+                    .then(() => showToast('Copied to clipboard'))
+                    .catch(() => showToast('Copy failed'));
+                }, 'image/png');
+              };
+              img.onerror = () => showToast('Copy failed');
+            });
+
+            // Save meme functionality
+            card.querySelector('.save-meme').addEventListener('click', (e) => {
+              e.preventDefault();
+              const a = document.createElement('a');
+              a.href = src;
+              a.download = src.split('/').pop();
+              a.click();
+            });
+          });
+        } else {
+          uploadResults.innerHTML = '<li class="no-memes">No memes found.</li>';
+        }
+      } catch (err) {
+        uploadResults.innerHTML = '<li class="no-memes">Oops! Something went wrong.</li>';
+      } finally {
+        uploadLoader.style.display = 'none';
+        uploadButton.disabled = false;
+      }
     });
 
     // add modal close behavior

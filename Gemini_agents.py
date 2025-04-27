@@ -18,7 +18,7 @@ model_3 = genai.GenerativeModel("gemini-2.5-pro-preview-03-25", system_instructi
 def predict_template_decision(user_input):
     prompt = build_prompt_template_decision(user_input)
     try:
-        response = model_1.generate_content(prompt, temperature=0.1)
+        response = model_1.generate_content(prompt)
         answer = response.text.strip().lower()
         # print("\n[DEBUG] Raw Gemini response for template decision:\n", answer)
         if "yes" in answer:
@@ -31,7 +31,7 @@ def predict_template_decision(user_input):
 def predict_topic_presence(user_input):
     prompt = build_prompt_topic_presence(user_input)
     try:
-        response = model_1.generate_content(prompt, temperature=0.1)
+        response = model_1.generate_content(prompt)
         answer = response.text.strip().lower()
         # print("\n[DEBUG] Gemini response for topic presence:", answer)
         if "yes" in answer:
@@ -44,7 +44,7 @@ def predict_topic_presence(user_input):
 def predict_usage_decision(user_input):
     prompt = build_prompt_usage_decision(user_input)
     try:
-        response = model_1.generate_content(prompt, temperature=0.1)
+        response = model_1.generate_content(prompt)
         answer = response.text.strip().lower()
         # print("\n[DEBUG] Gemini response for usage decision:", answer)
         if "yes" in answer:
@@ -58,7 +58,7 @@ def predict_usage_decision(user_input):
 def predict_input_details(user_input, need_template,has_topics,has_usages):
     prompt = build_prompt_details(user_input, need_template, has_topics, has_usages)
     try:
-        response = model_1.generate_content(prompt)
+        response = model_3.generate_content(prompt)
         answer = response.text.strip()
         # print("\n[DEBUG] Raw Gemini response for input details:\n", answer)
 
@@ -116,5 +116,5 @@ def process_user_input(user_input):
 
 
 # if __name__ == "__main__":
-#     user_input = "Give me some hilarious memes"
+#     user_input = "Give me Pikachu memes."
 #     process_user_input(user_input)
