@@ -6,7 +6,7 @@ from PIL import Image
 import numpy as np
 from easyocr import Reader as EasyOCRReader
 from paddleocr import PaddleOCR
-from transformers import Blip2Processor, Blip2ForConditionalGeneration
+from transformers import BlipProcessor, BlipForConditionalGeneration
 import torch
 from pydantic import BaseModel
 from typing import List, Optional
@@ -27,8 +27,8 @@ app = FastAPI()
 # instantiate OCR and caption models
 easyocr_reader = EasyOCRReader(['en'], gpu=True)
 paddle_reader = PaddleOCR(use_angle_cls=True, lang='en')
-blip_processor = Blip2Processor.from_pretrained('Salesforce/blip2-opt-2.7b')
-blip_model = Blip2ForConditionalGeneration.from_pretrained('Salesforce/blip2-opt-2.7b', torch_dtype=torch.float16).eval()
+blip_processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+blip_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base").to('cuda')
 
 class QueryRequest(BaseModel):
     query: str
@@ -108,7 +108,7 @@ async def recommend_upload(
             rec_files = local.get_similar_memes(
                 topics=text, usages=False, need_template=False, search_by='Local'
             )
-            with open("log/error_log.txt", "a") as log_file:
+            with open("log/image_caption_test.txt", "a") as log_file:
                 log_file.write(f"Extracted text: {text}\n")
                 log_file.write(f"Recommended files: {rec_files}\n")
         else:
@@ -116,20 +116,24 @@ async def recommend_upload(
             img = cv2.imread(tmp_path)
             ocr_res = paddle_reader.ocr(tmp_path, cls=True)
             for line in ocr_res:
-                for word in line:
-                    x1, y1 = map(int, word[0][0])
-                    x2, y2 = map(int, word[0][2])
-                    cv2.rectangle(img, (x1,y1), (x2,y2), (255,255,255), -1)
-            # convert to PIL image for BLIP
-            pil_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-            inputs = blip_processor(images=pil_img, return_tensors='pt').to(blip_model.device, torch.float16)
+                if line:
+                    for word in line:
+                        text = word[1][0]
+                        bbox = word[0]
+                        x1, y1 = map(int, word[0][0])
+                        x2, y2 = map(int, word[0][2])
+                        cv2.rectangle(img, (x1,y1), (x2,y2), (255,255,255), thickness = -1)
+            cv2.imwrite(tmp_path, img)
+            image = Image.open(tmp_path).convert("RGB")
+            inputs = blip_processor(image, return_tensors="pt").to('cuda')
+
             with torch.no_grad():
                 out_ids = blip_model.generate(**inputs)
             caption = blip_processor.decode(out_ids[0], skip_special_tokens=True)
             rec_files = local.get_similar_memes(
                 topics=caption, usages=False, need_template=False, search_by='Global'
             )
-            with open("log/error_log.txt", "a") as log_file:
+            with open("log/image_caption_test.txt", "a") as log_file:
                 log_file.write(f"Caption: {caption}\n")
                 log_file.write(f"Recommended files: {rec_files}\n")
 
