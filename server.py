@@ -112,7 +112,7 @@ async def recommend_upload(
                 log_file.write(f"Extracted text: {text}\n")
                 log_file.write(f"Recommended files: {rec_files}\n")
         else:
-            # mask text regions via PaddleOCR, then caption via BLIP-2
+            # mask text regions via PaddleOCR, then caption via BLIP
             img = cv2.imread(tmp_path)
             ocr_res = paddle_reader.ocr(tmp_path, cls=True)
             for line in ocr_res:
@@ -137,11 +137,9 @@ async def recommend_upload(
                 log_file.write(f"Caption: {caption}\n")
                 log_file.write(f"Recommended files: {rec_files}\n")
 
-        # build URLs
         meme_urls = [f"/static/{fname}" for fname in rec_files]
         return {"memes": meme_urls}
     finally:
-        # cleanup temp file
         try: os.remove(tmp_path)
         except: pass
 

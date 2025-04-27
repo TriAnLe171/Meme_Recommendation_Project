@@ -4,7 +4,6 @@ import torch
 import os
 import csv
 
-# Load BLIP-2 model
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base").to('cuda')
 input_dir = "###"
