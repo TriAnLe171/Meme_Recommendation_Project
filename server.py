@@ -71,6 +71,13 @@ def recommend(req: QueryRequest):
         top_n_template=req.top_n_template
     )
 
+    with open("log/MemeRequest_log.txt", "a") as f:
+        f.write("\n========== Processing New Input ==========\n")
+        f.write(f"User Input: {req.query}\n\n")
+        f.write(f"\n[FINAL RESULT] Processed Output:\n{processed}\n")
+        f.write("=========================================\n")
+        f.write("\n\n")
+
     meme_urls = [f"/static/{filename}" for filename in recommended_memes]
 
     return {
@@ -113,7 +120,7 @@ async def recommend_upload(
                 search_by='Local',
                 top_n=top_n
             )
-            with open("log/image_caption_test.txt", "a") as log_file:
+            with open("log/FindSimilar_log.txt", "a") as log_file:
                 log_file.write(f"Extracted text: {text}\n")
                 log_file.write(f"Recommended files: {rec_files}\n")
         else:
@@ -142,7 +149,7 @@ async def recommend_upload(
                 search_by='Global',
                 top_n=top_n
             )
-            with open("log/image_caption_test.txt", "a") as log_file:
+            with open("log/FindSimilar_log.txt", "a") as log_file:
                 log_file.write(f"Caption: {caption}\n")
                 log_file.write(f"Recommended files: {rec_files}\n")
 

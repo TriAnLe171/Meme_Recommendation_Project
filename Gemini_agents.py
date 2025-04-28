@@ -105,16 +105,10 @@ def process_user_input(user_input):
         "details": details
     }
 
-    with open("log/input_output_log.txt", "a") as f:
-        f.write("\n========== Processing New Input ==========\n")
-        f.write(f"User Input: {user_input}\n\n")
-        f.write(f"\n[FINAL RESULT] Processed Output:\n{result}\n")
-        f.write("=========================================\n")
-        f.write("\n\n")
-
     return result
 
 
 # if __name__ == "__main__":
 #     user_input = "Give me Pikachu memes."
-#     process_user_input(user_input)
+#     processed = process_user_input(user_input)
+#     print("\n[FINAL RESULT] Processed Output:\n", processed)
