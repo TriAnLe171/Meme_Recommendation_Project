@@ -1148,18 +1148,23 @@
     });
 
     // Upload panel dropdown logic using modern dropdown design
-    const uploadDropdownBtn = document.getElementById('uploadDropdownBtn');
-    const uploadDropdownMenu = document.getElementById('uploadDropdownMenu');
-    uploadDropdownBtn.addEventListener('click', e => { e.stopPropagation(); uploadDropdownMenu.classList.toggle('show'); });
-    document.addEventListener('click', () => { uploadDropdownMenu.classList.remove('show'); });
-    uploadDropdownMenu.querySelectorAll('a').forEach(item => {
+    const uploadFilterBtn = document.getElementById('uploadDropdownBtn');
+    const uploadFilterDropdown = document.getElementById('uploadDropdownMenu');
+    uploadFilterBtn.addEventListener('click', e => { e.stopPropagation(); uploadFilterDropdown.classList.toggle('show'); });
+    document.addEventListener('click', () => { uploadFilterDropdown.classList.remove('show'); });
+    uploadFilterDropdown.querySelectorAll('a').forEach(item => {
       item.addEventListener('click', e => {
         e.preventDefault();
-        uploadDropdownMenu.querySelectorAll('a').forEach(x => x.classList.remove('selected'));
-        item.classList.add('selected');
+        // ...existing selection and hidden input updates...
         const val = item.getAttribute('data-value');
         document.getElementById('uploadTopN').value = val;
-        uploadDropdownBtn.textContent = `Memes: ${val} ▾`;
+        uploadFilterBtn.textContent = `Memes: ${val} ▾`;
+        // auto-refresh upload results on filter change
+        if (typeof uploadForm.requestSubmit === 'function') {
+          uploadForm.requestSubmit();
+        } else {
+          uploadForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        }
       });
     });
   </script>
