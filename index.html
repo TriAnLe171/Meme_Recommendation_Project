@@ -617,6 +617,27 @@
     .dropdown-menu a.selected {
       background: var(--primary);
     }
+
+    #uploadForm button[type="submit"] {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 18px 24px;
+      font-size: 1rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    #uploadForm button[type="submit"]:hover {
+      background: #357ab8;
+      cursor: not-allowed;
+    }
+    #uploadForm button[type="submit"]:disabled {
+      background: #aaccee;
+      cursor: not-allowed;
+      transform: none;
+    }
   </style>
 </head>
 <body>
