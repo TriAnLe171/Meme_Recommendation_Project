@@ -82,7 +82,8 @@ def recommend(req: QueryRequest):
 @app.post('/recommend/upload')
 async def recommend_upload(
     context: str = Form(...),
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    top_n: int = Form(10)
 ):
     # save incoming file
     tmp_filename = f"temp_upload/tmp_{uuid.uuid4().hex}_{file.filename}"
@@ -106,7 +107,11 @@ async def recommend_upload(
             results = easyocr_reader.readtext(tmp_path, detail=0)
             text = ' '.join(results)
             rec_files = local.get_similar_memes(
-                topics=text, usages=False, need_template=False, search_by='Local'
+                topics=text,
+                usages=False,
+                need_template=False,
+                search_by='Local',
+                top_n=top_n
             )
             with open("log/image_caption_test.txt", "a") as log_file:
                 log_file.write(f"Extracted text: {text}\n")
@@ -131,7 +136,11 @@ async def recommend_upload(
                 out_ids = blip_model.generate(**inputs)
             caption = blip_processor.decode(out_ids[0], skip_special_tokens=True)
             rec_files = local.get_similar_memes(
-                topics=caption, usages=False, need_template=False, search_by='Global'
+                topics=caption,
+                usages=False,
+                need_template=False,
+                search_by='Global',
+                top_n=top_n
             )
             with open("log/image_caption_test.txt", "a") as log_file:
                 log_file.write(f"Caption: {caption}\n")

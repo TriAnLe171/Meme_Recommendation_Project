@@ -473,7 +473,7 @@
     .filter-btn {
       background: var(--card-bg);
       color: var(--text);
-      border: none;
+      border: 1px solid #ccc;
       padding: 8px 12px;
       border-radius: var(--radius);
       cursor: pointer;
@@ -549,6 +549,73 @@
     #uploadResults {
       /* force 3 columns for upload results */
       grid-template-columns: repeat(3, minmax(250px, 1fr));
+    }
+    /* Modern dropdown styling for meme count selection */
+    .dropdown-wrapper {
+      position: relative;
+      display: inline-block;
+      margin-top: var(--gap);
+    }
+
+    .dropdown-btn {
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background var(--transition), box-shadow var(--transition);
+      display: flex;
+      gap: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      width: 100%; /* Match the width of the dropdown menu in the "Give your request" panel */
+      max-width: 600px; /* Ensure it doesn't exceed the panel's max width */
+    }
+
+    .dropdown-btn:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
+      z-index: 10;
+      min-width: 100%; /* Match the width of the dropdown button */
+      max-width: 600px; /* Ensure it doesn't exceed the panel's max width */
+    }
+
+    .dropdown-menu.show {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .dropdown-menu a {
+      display: block;
+      padding: 8px 12px;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 1rem;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .dropdown-menu a:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .dropdown-menu a.selected {
+      background: var(--primary);
     }
   </style>
 </head>
@@ -651,6 +718,16 @@
       <label><input type="radio" name="context" value="global"> Global Context</label>
       <input type="file" id="uploadFile" name="file" accept="image/*" required>
       <button type="submit">Find Similar</button>
+      <!-- Upload results count selector -->
+      <input type="hidden" id="uploadTopN" name="top_n" value="10">
+      <div class="dropdown-wrapper">
+        <button type="button" class="dropdown-btn" id="uploadDropdownBtn">Memes: 10 ▾</button>
+        <div class="dropdown-menu" id="uploadDropdownMenu">
+          <a href="#" data-value="10" class="selected">10</a>
+          <a href="#" data-value="20">20</a>
+          <a href="#" data-value="50">50</a>
+        </div>
+      </div>
     </form>
     <div id="uploadLoader" style="display:none; margin: var(--gap) auto;" role="status" aria-label="Loading">
       <div style="border:4px solid #f3f3f3; border-top:4px solid var(--primary); border-radius:50%; width:40px; height:40px; animation:spin 1s linear infinite;"></div>
@@ -923,6 +1000,9 @@
       uploadLoader.style.display = 'block';
       try {
         const formData = new FormData(uploadForm);
+        const topNVal = document.getElementById('uploadTopN').value;
+        formData.set('top_n', topNVal);
+
         const resp = await fetch('/recommend/upload', { method: 'POST', body: formData });
         const data = await resp.json();
         if (data.memes && data.memes.length) {
@@ -1064,6 +1144,22 @@
             form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
           }
         }
+      });
+    });
+
+    // Upload panel dropdown logic using modern dropdown design
+    const uploadDropdownBtn = document.getElementById('uploadDropdownBtn');
+    const uploadDropdownMenu = document.getElementById('uploadDropdownMenu');
+    uploadDropdownBtn.addEventListener('click', e => { e.stopPropagation(); uploadDropdownMenu.classList.toggle('show'); });
+    document.addEventListener('click', () => { uploadDropdownMenu.classList.remove('show'); });
+    uploadDropdownMenu.querySelectorAll('a').forEach(item => {
+      item.addEventListener('click', e => {
+        e.preventDefault();
+        uploadDropdownMenu.querySelectorAll('a').forEach(x => x.classList.remove('selected'));
+        item.classList.add('selected');
+        const val = item.getAttribute('data-value');
+        document.getElementById('uploadTopN').value = val;
+        uploadDropdownBtn.textContent = `Memes: ${val} ▾`;
       });
     });
   </script>
