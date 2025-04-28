@@ -618,25 +618,37 @@
       background: var(--primary);
     }
 
+    /* Modern pill-shaped gradient ‘Find Similar’ button */
     #uploadForm button[type="submit"] {
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary) 0%, #357ab8 100%);
       color: #fff;
+      padding: 14px 20px;
       border: none;
-      padding: 18px 24px;
-      font-size: 1rem;
-      border-radius: var(--radius);
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
       cursor: pointer;
-      transition: background var(--transition), transform var(--transition);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      width: 100%;
+      max-width: 360px;
+      margin: var(--gap) 0 0 0;
     }
-    #uploadForm button[type="submit"]:hover {
-      background: #357ab8;
-      cursor: not-allowed;
+    #uploadForm button[type="submit"]:hover:not(:disabled) {
+      background: linear-gradient(135deg, #357ab8 0%, var(--primary) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    #uploadForm button[type="submit"]:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     #uploadForm button[type="submit"]:disabled {
-      background: #aaccee;
+      opacity: 0.6;
       cursor: not-allowed;
-      transform: none;
+      box-shadow: none;
+      background: linear-gradient(135deg, var(--primary) 0%, #357ab8 100%);
     }
   </style>
 </head>
