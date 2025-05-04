@@ -4,7 +4,6 @@
 /images
 /oldUpdate
 /meme_to_template_map_updated.csv
-/results
 /sentiment_analysis_scores_300.csv
 /under_0.7.txt
 /usage_results.csv
@@ -16,6 +15,5 @@
 /usage_result.csv
 /log
 /API_keys.py
-/UI_images
 /data_proccessing.ipynb
 /temp_upload
