@@ -54,6 +54,8 @@ Meme_Recommendation_Final/
 ├── sentiment_analysis.py    # Meme sentiment/emotion scoring
 ├── ImageCaptioning.py       # BLIP-based image captioning
 ├── embedding_generator.py   # Embedding generation for memes/templates
+├── PaddleOCR_global.py      # PaddleOCR for masking text regions
+├── EasyOCR_local.py         # EasyOCR for textual content extraction
 ├── index.html               # Main frontend UI
 ├── UI_images/               # App icons, profile images
 ├── results/                 # Folder for serving recommended memes
