@@ -77,9 +77,9 @@ Meme_Recommendation_Final/
    Gemini LLMs analyze the query to extract topics, usage, and intent.
 
 3. **Meme Retrieval:**  
-   - For text: Semantic search using topic/usage embeddings.
-   - For images: OCR text extraction or BLIP captioning, then semantic search.
-   - Sentiment/emotion-based search for vague queries.
+   - **Text Queries:** Performs semantic search using topic and usage embeddings derived from the user's prompt.  
+   - **Image Queries:** Applies OCR or BLIP-based captioning to extract textual context, which is then used for semantic retrieval.  
+   - **Vague or Emotional Prompts:** Recommend memes that align with the desired emotional tone utilizing sentiment and emotion scores.
 
 4. **Result Delivery:**  
    Top memes/templates are copied to the results folder and served to the frontend.
