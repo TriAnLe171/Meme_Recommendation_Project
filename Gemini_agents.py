@@ -12,8 +12,7 @@ from prompts import (
 genai.configure(api_key=key_gemini) 
 
 model_1 = genai.GenerativeModel("gemini-2.5-flash-preview-04-17", system_instruction= "You must always follow the rules.")
-model_2 = genai.GenerativeModel("gemini-2.0-flash", system_instruction= "You must always follow the rules.") 
-model_3 = genai.GenerativeModel("gemini-2.5-pro-preview-03-25", system_instruction= "You must always follow the rules.") 
+model_3 = genai.GenerativeModel("gemini-2.5-pro-preview-05-06", system_instruction= "You must always follow the rules.") 
 
 def predict_template_decision(user_input):
     prompt = build_prompt_template_decision(user_input)
