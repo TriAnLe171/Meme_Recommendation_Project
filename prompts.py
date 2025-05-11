@@ -9,7 +9,7 @@ Analyze the user's request and answer this question:
 Respond with **only one word**: `yes` or `no`. 
 
 Use the following rules:
-• Respond `yes` if the user clearly uses the word *template*, *format*, or phrases like “type of meme” or “structure” that indicate they want a blank meme template or image format.
+• Respond `yes` if the user clearly uses the word *template*, *format*, or phrases like "type of meme" or "structure" that indicate they want a blank meme template or image format.
 • Do NOT respond `yes` just because the user names a meme (e.g., 'Drakeposting' or 'Two Buttons') — they must explicitly request it as a *template* or *format*.
 • Respond `no` if the user is asking for meme content (e.g., "Give me a Drakeposting meme") or does not clearly indicate interest in a blank format/template.
 
@@ -132,6 +132,7 @@ Expected output format:
 
     elif not need_template and has_topics and has_usages: 
         #example: "Give me a Spongebob meme about taxes and US-China relations for humor and political satire."
+        #example: "give me memes to make fun of my friends"
         prompt = f"""
 You are a meme-recommendation assistant. 
 
@@ -150,9 +151,9 @@ Analyze the following user request and return a JSON object with exactly these t
     • If multiple topics are listed and at least one triggers **Global**, the final answer must be **Global**.  
     • You must return **only** `"local"` or `"global"`.  
     Examples:
-    - Request: “Give me Superman memes about teamwork.”  
-      → topics include “Superman” (franchise) ⇒ recommendation_focus = "global"  
-    - Request: “Make a meme about Monday motivation.”  
+    - Request: "Give me Superman memes about teamwork."  
+      → topics include "Superman" (franchise) ⇒ recommendation_focus = "global"  
+    - Request: "Make a meme about Monday motivation."  
       → no formats, no templates, no franchises ⇒ recommendation_focus = "local"
 3. "usages": A list of the intended purposes or usages for the recommended memes (e.g., humor, comparison, political satire).
 
@@ -160,7 +161,7 @@ Return only the JSON object in the format below. Use your best judgment to ident
 
 ---
 
-Example:
+Example 1:
 
 User request:
 \"\"\"My day has been really bad, I want a meme that can cheer me up. I really like the movie Despicable Me, give me some Minions memes.\"\"\"
@@ -170,6 +171,20 @@ Expected output:
   "topics": ["Minions"],
   "recommendation_focus": "global",
   "usages": ["Humor", "cheering up"]
+}}
+
+---
+
+Example 2:
+
+User request:
+\"\"\"give me memes to make fun of my friends\"\"\"
+
+Expected output:
+{{
+  "topics": ["friends"],
+  "recommendation_focus": "local",
+  "usages": ["Humor", "teasing"]
 }}
 
 ---
@@ -242,9 +257,9 @@ Analyze the following user request and return a JSON object with exactly these t
     • If multiple topics are listed and at least one triggers **Global**, the final answer must be **Global**.  
     • You must return **only** `"local"` or `"global"`.  
     Examples:
-    - Request: “Give me Superman memes about teamwork.”  
-      → topics include “Superman” (franchise) ⇒ recommendation_focus = "global"  
-    - Request: “Make a meme about Monday motivation.”  
+    - Request: "Give me Superman memes about teamwork."  
+      → topics include "Superman" (franchise) ⇒ recommendation_focus = "global"  
+    - Request: "Make a meme about Monday motivation."  
       → no formats, no templates, no franchises ⇒ recommendation_focus = "local"
 
 Return only the JSON object in the format below. Use your best judgment to identify the user's intent, but only extract what's directly relevant.

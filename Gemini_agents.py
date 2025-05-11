@@ -57,7 +57,7 @@ def predict_usage_decision(user_input):
 def predict_input_details(user_input, need_template,has_topics,has_usages):
     prompt = build_prompt_details(user_input, need_template, has_topics, has_usages)
     try:
-        response = model_3.generate_content(prompt)
+        response = model_1.generate_content(prompt)
         answer = response.text.strip()
         # print("\n[DEBUG] Raw Gemini response for input details:\n", answer)
 
