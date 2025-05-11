@@ -21,6 +21,10 @@ from API_keys import key_ngrok
 # Define absolute path for results directory
 BASE_DIR = os.path.dirname(__file__)
 RESULTS_DIR = os.path.join(BASE_DIR, "results")
+UI_DIR = os.path.join(BASE_DIR, "UI_images")
+IMG_DIR = os.path.join(BASE_DIR, "images")
+
+NGROK_PUBLIC_URL = "https://hugely-climbing-moray.ngrok-free.app"
 
 app = FastAPI()
 
@@ -78,7 +82,7 @@ def recommend(req: QueryRequest):
         f.write("=========================================\n")
         f.write("\n\n")
 
-    meme_urls = [f"/static/{filename}" for filename in recommended_memes]
+    meme_urls = [f"{NGROK_PUBLIC_URL}/static/{filename}" for filename in recommended_memes]
 
     return {
         "memes": meme_urls,
@@ -153,14 +157,14 @@ async def recommend_upload(
                 log_file.write(f"Caption: {caption}\n")
                 log_file.write(f"Recommended files: {rec_files}\n")
 
-        meme_urls = [f"/static/{fname}" for fname in rec_files]
+        meme_urls = [f"{NGROK_PUBLIC_URL}/static/{fname}" for fname in rec_files]
         return {"memes": meme_urls}
     finally:
         try: os.remove(tmp_path)
         except: pass
 
-app.mount("/static", StaticFiles(directory=RESULTS_DIR), name="static")
-app.mount("/UI_images", StaticFiles(directory=os.path.join(BASE_DIR, "UI_images")), name="UI_images")
+app.mount("/static", StaticFiles(directory=IMG_DIR), name="static")
+app.mount("/UI", StaticFiles(directory=UI_DIR), name="UI_images")
 
 @app.get("/", response_class=HTMLResponse)
 def index():
