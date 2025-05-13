@@ -538,7 +538,6 @@ wrong answers only meme template,0,test_images/sad-thumbs-up-cat.png
 wrong answers only meme template,1,test_images/Guess_Ill_die.png
 wrong answers only meme template,0,test_images/Unhelpful_High_School_Teacher.png
 wrong answers only meme template,1,test_images/relief.png
-wait its all meme template,None,None
 nobody meme template,0,test_images/Blank_meme_template.png
 nobody meme template,0,test_images/i-dont-always.png
 nobody meme template,0,test_images/Blank.png
@@ -559,7 +558,6 @@ Netflix adaptation meme template,0,test_images/Thanos_back_to_me.png
 Netflix adaptation meme template,1,test_images/Three_headed_Dragon.png
 Netflix adaptation meme template,2,test_images/good-guy-greg.png
 Netflix adaptation meme template,1,test_images/what-did-it-cost.png
-guess Ill die meme template,None,None
 man looking out window meme template,2,test_images/Over_Educated_Problems.png
 man looking out window meme template,2,test_images/Tom_Hardy_.png
 man looking out window meme template,2,test_images/If_those_kids_could_read_theyd_be_very_upset.png
@@ -1130,7 +1128,6 @@ retrieve the me explaining vs friend not listening meme template for one-sided c
 retrieve the me explaining vs friend not listening meme template for one-sided convos,2,test_images/Bro_explaining.png
 retrieve the me explaining vs friend not listening meme template for one-sided convos,2,test_images/What_my_friends_think_I_do.png
 retrieve the me explaining vs friend not listening meme template for one-sided convos,2,test_images/talking-to-wall.png
-get the gru pointing to plan that backfires meme used to show unintended outcomes,None,None
 find the success kid meme template commonly used to depict small victories,2,test_images/Success_Kid.png
 find the success kid meme template commonly used to depict small victories,2,test_images/Success_Kid_Original.png
 find the success kid meme template commonly used to depict small victories,2,test_images/Success_Kid_Girl.png
@@ -1464,7 +1461,6 @@ search for the tuxedo Winnie the Pooh meme template to show formal versions of i
 search for the tuxedo Winnie the Pooh meme template to show formal versions of ideas,1,test_images/I_wish_all_x_a_very_y.png
 search for the tuxedo Winnie the Pooh meme template to show formal versions of ideas,0,test_images/crying-michael-jordan.png
 search for the tuxedo Winnie the Pooh meme template to show formal versions of ideas,2,test_images/Fancy_Winnie_The_Pooh_Meme.png
-locate the if you could stop thatd be great meme template for passive-aggressive feedback,None,None
 identify the I fear no man but that thing meme template to show exaggerated fears,2,test_images/i-fear-no-man-but-that-thingit-scares-me.png
 identify the I fear no man but that thing meme template to show exaggerated fears,2,test_images/tf2-heavy-i-fear-no-man.png
 identify the I fear no man but that thing meme template to show exaggerated fears,2,test_images/brace-yourself.png
