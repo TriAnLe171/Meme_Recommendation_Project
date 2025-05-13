@@ -112,10 +112,7 @@ meme_queries = [
     "graduate defense memes",
     "confusing syllabus memes",
     "email signature memes",
-    "academic conference memes"
-]
-
-meme_queries_long = [
+    "academic conference memes",
     "memes about the pain of debugging a project minutes before the deadline",
     "memes capturing the awkward silence during a Zoom breakout room",
     "relatable memes about struggling to stay awake in 8am lectures",
@@ -321,10 +318,7 @@ template_queries = [
     "scream cat meme template",
     "we were on a break meme template",
     "water bottle flip meme template",
-    "meme inception template"
-]
-
-template_queries_long = [
+    "meme inception template",
     "find the distracted boyfriend meme template where the boyfriend represents procrastination and the girlfriend is time management",
     "search for the Drake no-yes meme template often used to contrast bad vs good study habits",
     "get the galaxy brain meme template typically used to represent increasingly absurd logic",
@@ -462,27 +456,33 @@ Query: {query}
         pass
     return None
 
-test_data = []
+def evaluate_queries(queries, output_csv):
+    for query in queries:
+        try:
+            result_dirs = main(query)  # Returns a list of 10 image paths
+            if not result_dirs:
+                raise Exception("No results returned for query.")
+            for result_dir in result_dirs:
+                score = gemini_evaluate_relevance(query, result_dir)
+                result_dir = result_dir.replace(".jpg", ".png")
+                with open(output_csv, "a") as f:
+                    f.write(f"{query},{score},{result_dir}\n")
+        except Exception as e:
+            print(f"Error processing query '{query}': {e}")
+            if 'result_dirs' in locals() and result_dirs:
+                for result_dir in result_dirs:
+                    with open(output_csv, "a") as f:
+                        f.write(f"{query},None,{result_dir}\n")
+            else:
+                with open(output_csv, "a") as f:
+                    f.write(f"{query},None,None\n")
 
-for query in meme_queries_long:
-    try:
-        result_dir = main(query)  
-        result_dir = result_dir.replace(".jpg", ".png")
-        label = gemini_evaluate_relevance(query, result_dir)
-        with open("test_meme.csv", "a") as f:
-            f.write(f"{query},{label},{result_dir}\n")
-    except Exception as e:
-        print(f"Error processing query {query}: {e}")
-        with open("test_meme.csv", "a") as f:
-            f.write(f"{query},None,{result_dir}\n")
-            
-for query in template_queries_long:
-    try:
-        result_dir = main(query)
-        result_dir = result_dir.replace(".jpg", ".png")
-        label = gemini_evaluate_relevance(query, result_dir)
-        with open("test_template.csv", "a") as f:
-            f.write(f"{query},{label},{result_dir}\n")
-    except Exception as e:
-        print(f"Error processing query {query}: {e}")
-        test_data.append({"query": query, "label": None, "image_path": None})
+if __name__ == "__main__":
+    # Define your queries here or import them if they are in another file
+    # meme_queries_long = [...]
+    # template_queries_long = [...]
+
+    print("Evaluating memes...")
+    evaluate_queries(meme_queries, "test_meme.csv")
+    print("Evaluating meme templates...")
+    evaluate_queries(template_queries, "test_template.csv")

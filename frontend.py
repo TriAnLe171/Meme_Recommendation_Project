@@ -47,29 +47,27 @@ def main(user_query):
         usages=usages_str,
         search_by=search_by,
         sentiment_preference=sentiment_preference,
-        top_n=1,
-        top_n_template=1
+        top_n=20,
+        top_n_template=10
     )
 
-    # --- FIX: Unpack the single filename from the list ---
+    image_paths = []
     if isinstance(recommended_memes, list) and len(recommended_memes) > 0:
-        recommended_meme = recommended_memes[0]
+        if need_template:
+            df = local.df_filename_withTemplate 
+        else:
+            df = (local.df_filename_noTemplate_local 
+                    if search_by == "Local" 
+                    else local.df_filename_noTemplate_global)
+        for recommended_meme in recommended_memes:
+            idx = df[df["Filename"] == recommended_meme].index[0]
+            image_path = local.get_image_path(idx, need_template, search_by if not need_template else None)
+            save_meme(image_path, recommended_meme)
+            image_paths.append(os.path.join(results_folder, recommended_meme.replace(".jpg", "") + ".png"))
     else:
-        return None
+        return []
 
-    if need_template:
-        df = local.df_filename_withTemplate 
-        idx = df[df["Filename"] == recommended_meme].index[0]
-    else:
-        df = (local.df_filename_noTemplate_local 
-                if search_by == "Local" 
-                else local.df_filename_noTemplate_global)
-        idx = df[df["Filename"] == recommended_meme].index[0]
+    return image_paths
 
-    image_path = local.get_image_path(idx, need_template, search_by if not need_template else None)
-    save_meme(image_path, recommended_meme)
-    # print(os.path.join(results_folder, recommended_meme))
-    return os.path.join(results_folder, recommended_meme)
-
-if __name__ == "__main__":
-    main("funny reaction memes")
+# if __name__ == "__main__":
+#     main("funny reaction memes")
