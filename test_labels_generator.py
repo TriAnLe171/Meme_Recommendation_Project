@@ -4,7 +4,7 @@ from API_keys import key_gemini
 from PIL import Image
 from Gemini_agents import process_user_input
 from local import get_similar_memes
-from frontend import main
+from test_labels_generator import main
 import os
 
 # Meme Retrieval Mode: user wants to find memes that match the query sentiment/topic
@@ -459,7 +459,7 @@ Query: {query}
 def evaluate_queries(queries, output_csv):
     for query in queries:
         try:
-            result_dirs = main(query)  # Returns a list of 10 image paths
+            result_dirs = main(query)
             if not result_dirs:
                 raise Exception("No results returned for query.")
             for result_dir in result_dirs:

@@ -24,8 +24,6 @@ def save_meme(image_path, meme_fileName):
     save_path = os.path.join(results_folder, f"{meme_fileName}.png")
     image.save(save_path)
 
-# ...existing code...
-
 def main(user_query):
     torch.cuda.empty_cache()
     # init_new_folders()
