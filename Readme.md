@@ -1,6 +1,6 @@
 # MEMEMATCH: AI-Powered Meme Recommendation System
 
-![MEMEMATCH Logo](UI_images/icons8-meme-96.png)
+![MEMEMATCH Logo](UI/icons8-meme-96.png)
 
 **MEMEMATCH** is an AI-powered web app that recommends the perfect meme or meme template for any situation. Whether you're feeling sarcastic, sad, or celebratory — just type a request or upload an image, and MEMEMATCH will do the rest. It leverages cutting-edge natural language processing, computer vision, and large language models to deliver contextually relevant and emotionally resonant meme suggestions.
 
