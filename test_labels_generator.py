@@ -478,10 +478,6 @@ def evaluate_queries(queries, output_csv):
                     f.write(f"{query},None,None\n")
 
 if __name__ == "__main__":
-    # Define your queries here or import them if they are in another file
-    # meme_queries_long = [...]
-    # template_queries_long = [...]
-
     print("Evaluating memes...")
     evaluate_queries(meme_queries, "test_meme.csv")
     print("Evaluating meme templates...")
