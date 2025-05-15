@@ -9,7 +9,7 @@ model_name = "cardiffnlp/twitter-roberta-base-emotion-multilabel-latest"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 max_length = tokenizer.model_max_length
 
-df = pd.read_csv('###',header=None,names=["Filename", "Extracted Text + Title"])
+df = pd.read_csv('#REPLACE WITH INPUT .CSV FILE',header=None,names=["Filename", "Extracted Text + Title"])
 
 emotion_labels = [
     "joy", "anticipation", "disgust", "sadness", "anger", 
@@ -33,7 +33,7 @@ def get_sentiment(text):
 
     return [scores[label] for label in (emotion_labels + sentiment_labels)]  
 
-output_file = "IMGFLIP_sentiment_analysis_scores.csv"
+output_file = "#REPLACE WITH OUTPUT .CSV FILE"
 
 with open(output_file, "w", newline="", encoding="utf-8") as f:
     writer = csv.writer(f)
