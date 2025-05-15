@@ -1,4 +1,4 @@
-# MEMEMATCH: AI-Powered Meme Recommendation System
+# MEMEMATCH: AI-Powered Meme Recommendation System - Tri An Le
 
 ![MEMEMATCH Logo](UI_images/memematch_96.png)
 
@@ -60,7 +60,13 @@ Meme_Recommendation_Final/
 ├── UI_images/               # App icons, profile images
 ├── results/                 # Folder for serving recommended memes
 ├── zipped_CSV_files         # Reddit memes' local context, meme-template mappings, sentiment scores, usages
-├── test_filepaths           # Returns filepaths for recommended memes
+├── recommendation_filepaths # Returns filepaths for recommended memes
+├── test_labels_generator.py # Semi-automated relevance labels (2,1,0) generator for queries and recommended memes
+├── test_meme.csv            # Test results of meme queries
+├── test_template.csv        # Test results of meme template queries
+├── evaluation.ipynb         # Evaluation of text-to-image model performance
+├── EDA_Reddit_local.ipynb   # Exploratory Data Analysis of Local Context of Reddit memes
+├── requirements.txt         # Dependencies version
 ```
 
 ---
@@ -97,6 +103,12 @@ Meme_Recommendation_Final/
 - "Give me a meme for cheering up."
 
 ---
+
+## Setup and Run Instructions
+
+- For Jupyter Notebooks, unzip the files in "zipped_CSV_files" folder and extract to the current working directory (/Meme_Recommendation_Final).
+- For Python files, except for "server.py", they are implementations of the methodologies that I used in this project, please feel free to adjust it for your own purposes. You will need to create a "API_keys.py" and input your Gemini API key "key_gemini = # YOUR_API_KEY" there.
+- For index.html, feel free to use it as reference for your web interface.
 
 ## 👤 About the Author
 
