@@ -4,8 +4,8 @@ from paddleocr import PaddleOCR
 
 ocr = PaddleOCR(use_angle_cls=True, lang="en")  
 
-input_dir = "/home/hsdslab/Documents/Meme_project_TriAn/all_images_IMGFlip2024/all_images_IMGFlip2024"  
-output_dir = "/home/hsdslab/Documents/Meme_project_TriAn/IMGFlip_blur"  
+input_dir = "# REPLACE WITH INPUT DIRECTORY"  
+output_dir = "# REPLACE WITH OUTPUT DIRECTORY"  
 
 os.makedirs(output_dir, exist_ok=True)
 image_files = [f for f in os.listdir(input_dir) if f.endswith((".jpg", ".png"))]

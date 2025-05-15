@@ -106,6 +106,7 @@ Meme_Recommendation_Final/
 
 ## Setup and Run Instructions
 
+- Create a Python environment with the dependencies listed in requirements.txt.
 - For Jupyter Notebooks, unzip the files in "zipped_CSV_files" folder and extract to the current working directory (/Meme_Recommendation_Final).
 - For Python files, except for "server.py", they are implementations of the methodologies that I used in this project, please feel free to adjust it for your own purposes. You will need to create a "API_keys.py" and input your Gemini API key "key_gemini = # YOUR_API_KEY" there.
 - For index.html, feel free to use it as reference for your web interface.
