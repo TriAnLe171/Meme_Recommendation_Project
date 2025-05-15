@@ -4,7 +4,7 @@ from API_keys import key_gemini
 from PIL import Image
 from Gemini_agents import process_user_input
 from local import get_similar_memes
-from test_labels_generator import main
+from recommendation_filepaths import main
 import os
 
 # Meme Retrieval Mode: user wants to find memes that match the query sentiment/topic
