@@ -84,7 +84,6 @@ User request:
     return prompt
 
 def build_prompt_details(user_input, need_template, has_topics, has_usages):
-# Add a rule to ignore emotional or comparative mentions in topics
     common_instruction = ('''
 Use the following rule when extracting "topics":
 1. Include only specific people, characters, events, or themes the user explicitly wants memes about.

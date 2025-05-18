@@ -433,8 +433,8 @@ def gemini_evaluate_relevance(query, image_path):
     prompt = f"""
 You will be shown a query and a meme image. Evaluate how relevant the image is to the query on a 3-point scale:
 
-2 = relevant  
-1 = partially relevant  
+2 = highly relevant 
+1 = relevant
 0 = not relevant
 
 Relevance can be based on either **local context** or **global context**—use the higher of the two.
