@@ -124,7 +124,7 @@ Data Science & AI Enthusiast
 
 For an in-depth explanation of the methods and results behind MEMEMATCH, see the research paper:
 
-- [MemeMatch: Context-Aware Multimodal Meme Retrieval and Recommendation via Structured Semantic Understanding](https://github.com/TriAnLe171/Meme_Recommendation_Project/blob/main/DeepLearning_FinalReport.pdf)
+- [MemeMatch: Context-Aware Multimodal Meme Retrieval and Recommendation via Structured Semantic Understanding](https://github.com/TriAnLe171/Meme_Recommendation_Project/blob/main/paper.pdf)
 
 ---
 
