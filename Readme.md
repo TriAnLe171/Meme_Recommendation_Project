@@ -27,15 +27,15 @@
 - 💬 **Semantic & Sentiment Search**  
   Matches memes based on topics, use cases (e.g., roast, celebration), and emotional tone.
 
-- 💻 **Modern Web Interface**  
-  Clean, responsive UI with support for dark mode, image uploads, search history, and filterable results.
+- 💻 **Modern Web Interface and Android Application**
 
 ---
 
 ## 🧰 Tech Stack
 
+- **Android:** Kotlin, Jetpack Compose, Firebase (Auth, Firestore), Retrofit, Kotlin Coroutines
 - **Backend:** FastAPI, Google Gemini API, Hugging Face Transformers, SentenceTransformers, BERTopic, EasyOCR, PaddleOCR, BLIP, scikit-learn, pandas, NumPy  
-- **Frontend:** HTML, CSS, JavaScript  
+- **Frontend:** HTML, CSS, JavaScript
 - **Deployment:** Uvicorn, pyngrok (for local tunneling)  
 - **Data:** Meme/meme template datasets, precomputed embeddings, usage/emotion labels  
 
@@ -115,7 +115,7 @@ Meme_Recommendation_Final/
 ## 👤 About the Author
 
 **Tri An Le**  
-Data Science & AI Enthusiast  
+Natural Language Processing Enthusiast
 - Email: [triandole@gmail.com](mailto:triandole@gmail.com)  
 - LinkedIn: [https://www.linkedin.com/in/trianle/](https://www.linkedin.com/in/trianle/)
 
