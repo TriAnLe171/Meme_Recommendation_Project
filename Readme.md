@@ -73,7 +73,7 @@ Meme_Recommendation_Final/
 
 ## ⚡ Quick Start
 
-- Access the app at [https://hugely-climbing-moray.ngrok-free.app/](https://hugely-climbing-moray.ngrok-free.app/).
+- Download the **Android application** at https://drive.google.com/file/d/1wZ1ORq2wbjOP-TfdhMHnRdoSeN1UgZvR/view or access the **website** at [https://hugely-climbing-moray.ngrok-free.app/](https://hugely-climbing-moray.ngrok-free.app/).
 
 ---
 
@@ -110,6 +110,7 @@ Meme_Recommendation_Final/
 - For Jupyter Notebooks, unzip the files in "zipped_CSV_files" folder and extract to the current working directory (/Meme_Recommendation_Final).
 - For Python files, except for "server.py", they are implementations of the methodologies that I used in this project, please feel free to adjust it for your own purposes. You will need to create a "API_keys.py" and input your Gemini API key "key_gemini = # YOUR_API_KEY" there.
 - For index.html, feel free to use it as reference for your web interface.
+- **Please notice**: Without the meme dataset, the framework cannot operate. Please contact the author for the access to the dataset.
 
 ## 👤 About the Author
 
