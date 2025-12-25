@@ -32,7 +32,7 @@ app = FastAPI()
 easyocr_reader = EasyOCRReader(['en'], gpu=True)
 paddle_reader = PaddleOCR(use_angle_cls=True, lang='en')
 blip_processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-blip_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base").to('cuda')
+blip_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base") #.to("cuda")
 
 class QueryRequest(BaseModel):
     query: str
@@ -141,7 +141,7 @@ async def recommend_upload(
                         cv2.rectangle(img, (x1,y1), (x2,y2), (255,255,255), thickness = -1)
             cv2.imwrite(tmp_path, img)
             image = Image.open(tmp_path).convert("RGB")
-            inputs = blip_processor(image, return_tensors="pt").to('cuda')
+            inputs = blip_processor(image, return_tensors="pt") #.to("cuda")
 
             with torch.no_grad():
                 out_ids = blip_model.generate(**inputs)
