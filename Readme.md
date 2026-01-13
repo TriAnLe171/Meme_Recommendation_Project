@@ -2,7 +2,7 @@
 
 ![MEMEMATCH Logo](UI_images/memematch_96.png)
 
-**MEMEMATCH** is an AI-powered tool that recommends the perfect meme or meme template for any situation. Whether you're feeling sarcastic, sad, or celebratory — just type a request or upload an image, and MEMEMATCH will do the rest. It leverages cutting-edge natural language processing, computer vision, and large language models to deliver contextually relevant and emotionally resonant meme suggestions.
+**MemeMatch** starts with nearly one million memes collected from Reddit’s r/Memes (2018–2022) and ImgFlip, then cleans and curates a core set of about 301K memes spanning 2,083 common templates. For each meme, I extract local context by reading the overlaid text with OCR and combining it with the post title, and I extract global context by masking the text and captioning the underlying image. Using this dual-context pipeline, I built a large-scale multimodal meme dataset with rich annotations (emotion vectors, topics, and usage-intent labels) and studied how these attributes relate to virality and engagement. Building on the dataset, I then engineered a context-aware retrieval system on top of it by developing a framework of case-based text embeddings and an LLM-based parser to examine how meaning and intent shift across communities and contexts, and how those shifts relate to engagement. Together, MemeMatch provides a structured way to study online communities through memes and how humor, emotion, and culture spread online.
 
 ---
 
@@ -117,6 +117,7 @@ Meme_Recommendation_Final/
 **Tri An Le**  
 Natural Language Processing Enthusiast
 - Email: [triandole@gmail.com](mailto:triandole@gmail.com)  
+- Homepage: [https://trianle171.github.io/](https://trianle171.github.io/)
 - LinkedIn: [https://www.linkedin.com/in/trianle/](https://www.linkedin.com/in/trianle/)
 
 ---
@@ -125,13 +126,13 @@ Natural Language Processing Enthusiast
 
 For an in-depth explanation of the methods and results behind MEMEMATCH, see the research paper:
 
-- [MemeMatch: Context-Aware Multimodal Meme Retrieval and Recommendation via Structured Semantic Understanding](https://github.com/TriAnLe171/Meme_Recommendation_Project/blob/main/paper.pdf)
+- [MemeMatch: A Large-Scale Dual-Context Multimodal Dataset and Retrieval System for Internet Memes](https://github.com/TriAnLe171/Meme_Recommendation_Project/blob/main/TriAn_MemeMatch_TechReport.pdf)
 
 ---
 
 ## 📄 License
 
-© 2025 MEMEMATCH. All rights reserved.
+© 2026 MEMEMATCH. All rights reserved.
 
 ---
 
