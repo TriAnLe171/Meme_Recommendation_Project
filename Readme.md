@@ -59,7 +59,7 @@ Meme_Recommendation_Final/
 ├── index.html               # Main frontend UI
 ├── UI_images/               # App icons, profile images
 ├── results/                 # Folder for serving recommended memes
-├── zipped_CSV_files         # Reddit memes' local context, meme-template mappings, sentiment scores, usages
+├── zipped_CSV_files         # Reddit memes' local/global context, meme-template mappings, sentiment scores, usages
 ├── recommendation_filepaths # Returns filepaths for recommended memes
 ├── test_labels_generator.py # Semi-automated relevance labels (2,1,0) generator for queries and recommended memes
 ├── test_meme.csv            # Test results of meme queries
