@@ -45,7 +45,7 @@ def compute_image_hash(image_path):
                 img_hash = imagehash.phash(img)
                 return str(img_hash)
         except Exception as e:
-            with open("error_log/error_log.txt", "a") as log_file:
+            with open("log/error_log.txt", "a") as log_file:
                 log_file.write(f"Error processing {image_path}: {e}\n")
                 return None
 
