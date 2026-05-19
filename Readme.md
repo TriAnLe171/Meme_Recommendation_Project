@@ -126,7 +126,7 @@ Natural Language Processing Enthusiast
 
 For an in-depth explanation of the methods and results behind MEMEMATCH, see the research paper:
 
-- [MemeMatch: A Large-Scale Dual-Context Multimodal Dataset and Retrieval System for Internet Memes](https://github.com/TriAnLe171/Meme_Recommendation_Project/blob/main/TriAn_MemeMatch_TechReport.pdf)
+- [MemeMatch: A Large-Scale Dual-Context Multimodal Dataset and Retrieval System for Internet Memes](https://github.com/TriAnLe171/MemeMatch-v1.0/blob/main/paper.pdf)
 
 ---
 
