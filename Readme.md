@@ -1,141 +1,320 @@
-# MEMEMATCH: AI-Powered Meme Recommendation System - Tri An Le
+# MemeMatch: A Large-Scale Dual-Context Multimodal Dataset and Retrieval System for Internet Memes
 
-![MEMEMATCH Logo](UI_images/memematch_96.png)
+![MemeMatch Logo](UI_images/memematch_96.png)
 
-**MemeMatch** starts with nearly one million memes collected from Reddit’s r/Memes (2018–2022) and ImgFlip, then cleans and curates a core set of about 301K memes spanning 2,083 common templates. For each meme, I extract local context by reading the overlaid text with OCR and combining it with the post title, and I extract global context by masking the text and captioning the underlying image. Using this dual-context pipeline, I built a large-scale multimodal meme dataset with rich annotations (emotion vectors, topics, and usage-intent labels) and studied how these attributes relate to virality and engagement. Building on the dataset, I then engineered a context-aware retrieval system on top of it by developing a framework of case-based text embeddings and an LLM-based parser to examine how meaning and intent shift across communities and contexts, and how those shifts relate to engagement. Together, MemeMatch provides a structured way to study online communities through memes and how humor, emotion, and culture spread online.
+**MemeMatch** is a large-scale multimodal dataset and retrieval framework for studying internet memes. The project introduces a dual-context representation that separates the **local context** of a meme, including user-added overlay text and post titles, from the **global context** of the underlying visual template or base image. This structure enables more precise analysis of how meme meaning emerges from the interaction between text, image, emotion, topic, and communicative intent.
 
----
+The MemeMatch corpus was built from nearly one million image-with-text memes collected from Reddit’s r/Memes and ImgFlip. After cleaning, deduplication, and preprocessing, the released dataset contains approximately **301K memes** spanning **2,083 meme templates**. Each meme is enriched with transformer-based annotations, including sentiment and emotion vectors, BERTopic-derived topics, and zero-shot usage-intent labels.
 
-## 🚀 Features
+This repository contains the code, data-processing pipeline, annotation framework, exploratory analysis notebooks, and retrieval system associated with the paper:
 
-- 🔍 **Natural Language Meme Search**  
-  Describe what you want (e.g., “Give me a sarcastic Zoom fatigue meme”), and get spot-on meme or template suggestions.
-
-- 🖼️ **Image-Based Search**  
-  Upload a meme to find visually or contextually similar ones using OCR and image captioning.
-
-- 🧠 **LLM-Powered Query Understanding**  
-  Google Gemini models extract your intent, usage context, and topics to improve recommendations.
-
-- 🌐 **Multimodal AI Pipelines**  
-  Combines NLP, computer vision, and zero-shot classification using:  
-  - SentenceTransformers & Gemini LLMs (embeddings generation, semantic search, query understanding, and topic modeling)  
-  - BART & RoBERTa (usage classification & emotion detection)
-  - EasyOCR & PaddleOCR (text from memes)  
-  - BLIP (image captioning)
-
-- 💬 **Semantic & Sentiment Search**  
-  Matches memes based on topics, use cases (e.g., roast, celebration), and emotional tone.
-
-- 💻 **Modern Web Interface and Android Application**
+> **MemeMatch: A Large-Scale Dual-Context Multimodal Dataset and Retrieval System for Internet Memes**  
+> Do Tri An Le, Donát Ákos Köller, Qixin Deng, Roland Molontay  
+> Accepted to ICWSM 2026
 
 ---
 
-## 🧰 Tech Stack
+## Overview
 
-- **Android:** Kotlin, Jetpack Compose, Firebase (Auth, Firestore), Retrofit, Kotlin Coroutines
-- **Backend:** FastAPI, Google Gemini API, Hugging Face Transformers, SentenceTransformers, BERTopic, EasyOCR, PaddleOCR, BLIP, scikit-learn, pandas, NumPy  
-- **Frontend:** HTML, CSS, JavaScript
-- **Deployment:** Uvicorn, pyngrok (for local tunneling)  
-- **Data:** Meme/meme template datasets, precomputed embeddings, usage/emotion labels  
+Internet memes are compact multimodal artifacts that combine image, text, humor, emotion, and cultural context. However, computational meme analysis is difficult because the same visual template can express very different meanings depending on the overlaid text, while the same textual idea can appear across different visual forms.
+
+MemeMatch addresses this challenge through a **dual-context framework**:
+
+- **Local context:** the user-added textual layer of the meme, extracted from OCR and combined with post titles.
+- **Global context:** the underlying visual or template-level meaning, obtained by masking overlaid text and captioning the remaining image.
+
+By separating these two layers, MemeMatch supports research on how memes encode affect, topics, usage intent, cultural references, and community-specific meanings.
 
 ---
 
-## 📦 Project Structure
+## Main Contributions
 
-```
+This repository supports the following contributions from the paper:
+
+1. **Large-scale meme dataset**  
+   A curated corpus of approximately 301K memes from Reddit’s r/Memes and ImgFlip, covering 2,083 common meme templates.
+
+2. **Dual-context meme representation**  
+   A structured representation that separates user-specific local text from template-level global visual semantics.
+
+3. **Rich semantic annotations**  
+   Each meme is annotated with:
+   - 14-dimensional sentiment and emotion vectors
+   - BERTopic-derived local and global topics
+   - Zero-shot usage-intent labels
+   - Auxiliary features such as local text length
+
+4. **Context-aware retrieval system**  
+   A retrieval framework that supports natural-language and image-based meme search using precomputed case-based embeddings and an LLM-based query parser.
+
+5. **Exploratory analysis of meme culture**  
+   Analysis of temporal upload patterns, affective differences between local and global contexts, topic distributions, and common meme usage categories.
+
+---
+
+## Dataset Summary
+
+The MemeMatch dataset combines two complementary sources:
+
+| Source | Description |
+|---|---|
+| Reddit r/Memes | Organic memes shared in an online community, collected from 2018 to 2023 with metadata such as title, timestamp, and score |
+| ImgFlip | Template-based memes with explicit template labels |
+
+After preprocessing, the dataset contains:
+
+| Component | Count |
+|---|---:|
+| Reddit memes | 146,991 |
+| ImgFlip memes | 153,792 |
+| Unique templates | 2,083 |
+| Total curated memes | ~301K |
+
+---
+
+## Dual-Context Framework
+
+MemeMatch processes each meme through two synchronized branches.
+
+### Local Context
+
+The local context captures the user-added meaning of a meme.
+
+It is constructed from:
+
+- OCR-extracted overlay text using EasyOCR
+- Reddit post titles when available
+- Template-string filtering to remove repeated artifacts, watermarks, and non-informative tokens
+
+This context is useful for studying meme messages, jokes, emotions, and situational meanings.
+
+### Global Context
+
+The global context captures the reusable visual substrate of a meme.
+
+It is constructed by:
+
+- Detecting text regions with PaddleOCR
+- Masking user-added text
+- Captioning the remaining image using BLIP
+
+This context is useful for studying visual templates, recurring image motifs, and template-level semantics.
+
+---
+
+## Annotation Pipeline
+
+MemeMatch enriches both local and global contexts with multiple semantic signals.
+
+### Sentiment and Emotion
+
+Each meme receives a 14-dimensional affect vector for both local and global contexts:
+
+- 11 emotion categories
+- 3 sentiment polarity scores: positive, neutral, negative
+
+The models are based on RoBERTa models fine-tuned on Twitter data.
+
+### Topic Modeling
+
+MemeMatch uses BERTopic to extract themes separately from local and global contexts.
+
+- Local context topics capture written meme content, cultural references, and time-sensitive themes.
+- Global context topics capture visual setups, recurring templates, objects, characters, and scenes.
+
+### Usage-Intent Labels
+
+MemeMatch applies zero-shot classification with BART-MNLI to infer communicative usage categories, such as:
+
+- Sarcasm or Irony
+- Parody or Spoof
+- Reaction or Reply Meme
+- Confusion or Disbelief
+- Wordplay or Pun
+- Emotional Frustration
+- Self-Deprecation
+- Media or Brand Critique
+
+---
+
+## Data Schema
+
+Each meme is represented using core metadata and derived annotations.
+
+### Core Metadata
+
+| Field | Description |
+|---|---|
+| `filename` | Unique image filename |
+| `created_utc` | Reddit upload timestamp, when available |
+| `score` | Reddit upvote score at crawl time |
+
+### Derived Annotations
+
+| Field | Description |
+|---|---|
+| `local_context` | Cleaned OCR text plus title |
+| `global_context` | BLIP caption of masked meme image |
+| `text_length` | Character count of local context |
+| `sentiment_local[14]` | Local-context emotion and sentiment vector |
+| `sentiment_global[14]` | Global-context emotion and sentiment vector |
+| `topic_local` | BERTopic label for local context |
+| `topic_global` | BERTopic label for global context |
+| `topic_score_local` | Local topic confidence |
+| `topic_score_global` | Global topic confidence |
+| `usage_labels` | Zero-shot usage-intent labels |
+
+---
+
+## Retrieval System
+
+### Natural-Language Retrieval
+
+A user query is parsed into structured retrieval attributes:
+
+- Search scope: meme or template
+- Topic: subject, entity, or concept
+- Usage intent: humor, complaint, reaction, motivation, critique, etc.
+
+The system then routes the query to the appropriate precomputed embedding collection and retrieves the most relevant memes using cosine similarity.
+
+### Image-Based Retrieval
+
+For uploaded meme images, MemeMatch supports two retrieval modes:
+
+1. **Global image-context retrieval**  
+   Masks text, captions the visual template, and retrieves visually or template-similar memes.
+
+2. **Local text-context retrieval**  
+   Extracts overlay text using OCR and retrieves memes with similar textual meaning.
+
+---
+
+## Repository Structure
+
+```text
 Meme_Recommendation_Final/
 │
 ├── server.py                # FastAPI backend server
-├── Gemini_agents.py         # Gemini LLM prompt engineering, topic modeling, and query parsing
-├── prompts.py               # Prompt templates for Gemini
+├── Gemini_agents.py         # LLM-based query parsing and topic/intent extraction
+├── prompts.py               # Prompt templates
 ├── local.py                 # Meme retrieval and similarity logic
-├── usage.py                 # Zero-shot meme usage classification
-├── sentiment_analysis.py    # Meme sentiment/emotion scoring
+├── usage.py                 # Zero-shot usage classification
+├── sentiment_analysis.py    # Sentiment and emotion scoring
 ├── ImageCaptioning.py       # BLIP-based image captioning
-├── embedding_generator.py   # Embedding generation for memes/templates
-├── PaddleOCR_global.py      # PaddleOCR for masking text regions
-├── EasyOCR_local.py         # EasyOCR for textual content extraction
-├── index.html               # Main frontend UI
-├── UI_images/               # App icons, profile images
-├── results/                 # Folder for serving recommended memes
-├── zipped_CSV_files         # Reddit memes' local/global context, meme-template mappings, sentiment scores, usages
-├── recommendation_filepaths # Returns filepaths for recommended memes
-├── test_labels_generator.py # Semi-automated relevance labels (2,1,0) generator for queries and recommended memes
-├── test_meme.csv            # Test results of meme queries
-├── test_template.csv        # Test results of meme template queries
-├── evaluation.ipynb         # Evaluation of text-to-image model performance
-├── EDA_Reddit_local.ipynb   # Exploratory Data Analysis of Local Context of Reddit memes
-├── requirements.txt         # Dependencies version
+├── embedding_generator.py   # Embedding generation for memes and templates
+├── PaddleOCR_global.py      # Text-region detection and masking for global context
+├── EasyOCR_local.py         # OCR extraction for local context
+├── index.html               # Web interface
+├── UI_images/               # App icons and interface images
+├── results/                 # Folder for serving retrieved memes
+├── zipped_CSV_files/        # CSV files required for retrieval system
+├── recommendation_filepaths # File paths for retrieved memes
+├── test_labels_generator.py # Semi-automated relevance label generation
+├── test_meme.csv            # Meme retrieval test results
+├── test_template.csv        # Template retrieval test results
+├── evaluation.ipynb         # Retrieval evaluation notebook
+├── EDA_local.ipynb          # Exploratory analysis notebook for local context
+├── EDA_global.ipynb         # Exploratory analysis notebook for global context
+├── requirements.txt         # Python dependencies
 ```
 
 ---
 
-## ⚡ Quick Start
+## Setup
 
-- Download the **Android application** at https://drive.google.com/file/d/1wZ1ORq2wbjOP-TfdhMHnRdoSeN1UgZvR/view or access the **website** at [https://hugely-climbing-moray.ngrok-free.app/](https://hugely-climbing-moray.ngrok-free.app/).
+Create a Python environment and install dependencies:
 
----
+```bash
+pip install -r requirements.txt
+```
 
-## 🧠 How It Works
+For Jupyter notebooks, unzip the files in the `zipped_CSV_files/` folder and extract them into the main project directory:
 
-1. **User Query:**  
-   User enters a text prompt or uploads an image.
+```text
+/Meme_Recommendation_Final
+```
 
-2. **Intent Parsing:**  
-   Gemini LLMs analyze the query to extract topics, usage, and intent.
+For scripts that use Gemini models, create an `API_keys.py` file:
 
-3. **Meme Retrieval:**  
-   - **Text Queries:** Performs semantic search using topic and usage embeddings derived from the user's prompt.  
-   - **Image Queries:** Applies OCR or BLIP-based captioning to extract textual context, which is then used for semantic retrieval.  
-   - **Vague or Emotional Prompts:** Recommend memes that align with the desired emotional tone utilizing sentiment and emotion scores.
-
-4. **Result Delivery:**  
-   Top memes/templates are copied to the results folder and served to the frontend.
+```python
+key_gemini = "YOUR_GEMINI_API_KEY"
+```
 
 ---
 
-## 📝 Example Queries
+## Retrieval Demo
 
-- "Give me a Spongebob meme about taxes and US-China relations."
-- "I want a meme template for political satire."
-- "Upload a meme and find similar ones."
-- "Give me a meme for cheering up."
+- MemeMatch Retrieval System (Web): [https://hugely-climbing-moray.ngrok-free.app](https://hugely-climbing-moray.ngrok-free.app)
+- MemeMatch Android App (Download): [https://drive.google.com/drive/u/2/home](https://drive.google.com/file/d/1wZ1ORq2wbjOP-TfdhMHnRdoSeN1UgZvR/view?usp=sharing)
+- Demo Video: [Youtube video here](https://youtu.be/j9r0e2kqzwI)
+
+## Dataset Access
+
+See: https://doi.org/10.34740/kaggle/dsv/14510064
 
 ---
 
-## Setup and Run Instructions
+## Applications
 
-- Create a Python environment with the dependencies listed in requirements.txt.
-- For Jupyter Notebooks, unzip the files in "zipped_CSV_files" folder and extract to the current working directory (/Meme_Recommendation_Final).
-- For Python files, except for "server.py", they are implementations of the methodologies that I used in this project, please feel free to adjust it for your own purposes. You will need to create a "API_keys.py" and input your Gemini API key "key_gemini = # YOUR_API_KEY" there.
-- For index.html, feel free to use it as reference for your web interface.
-- **Please notice**: Without the meme dataset, the framework cannot operate. Please contact the author for the access to the dataset.
+MemeMatch is designed for research in:
 
-## 👤 About the Author
+- Computational social science
+- Social media analysis
+- Multimodal machine learning
+- Digital culture and meme studies
+- Computational humor
+- Affective computing
+- Media literacy
+- Meme retrieval
+- Content moderation research
 
-**Tri An Le**  
-Natural Language Processing Enthusiast
-- Email: [triandole@gmail.com](mailto:triandole@gmail.com)  
+---
+
+## Limitations
+
+MemeMatch has several important limitations:
+
+- The current dataset focuses primarily on English-language memes from Reddit’s r/Memes and ImgFlip.
+- Automated annotations are probabilistic and should be treated as semantic signals rather than ground-truth labels.
+- OCR and captioning may fail on stylized fonts, dense overlays, low-quality images, or culturally specific references.
+- Reddit data and pretrained models may encode social, linguistic, and platform-specific biases.
+- The dataset covers 2018 to 2023 and does not include newer meme trends unless updated.
+
+---
+
+## Citation
+
+**Coming soon**
+
+---
+
+## Paper
+
+For the full methodology, dataset description, exploratory analysis, retrieval design, and limitations, see:
+
+[MemeMatch: A Large-Scale Dual-Context Multimodal Dataset and Retrieval System for Internet Memes](https://github.com/TriAnLe171/MemeMatch-v1.0/blob/main/paper.pdf)
+
+---
+
+## Author
+
+**Do Tri An Le**  
+Department of Mathematics and Computer Science, Wabash College  
+Incoming Ph.D. Student in Computer Science, University of Houston  
+
+- Email: [triandole@gmail.com](mailto:triandole@gmail.com)
 - Homepage: [https://trianle171.github.io/](https://trianle171.github.io/)
 - LinkedIn: [https://www.linkedin.com/in/trianle/](https://www.linkedin.com/in/trianle/)
 
 ---
 
-## 📄 Research Paper
+## License
 
-For an in-depth explanation of the methods and results behind MEMEMATCH, see the research paper:
-
-- [MemeMatch: A Large-Scale Dual-Context Multimodal Dataset and Retrieval System for Internet Memes](https://github.com/TriAnLe171/MemeMatch-v1.0/blob/main/paper.pdf)
+© 2026 MemeMatch. All rights reserved.
 
 ---
 
-## 📄 License
+## Contributing
 
-© 2026 MEMEMATCH. All rights reserved.
-
----
-
-## ⭐️ Contributing
-
-Pull requests and suggestions are welcome! Please open an issue or contact the author.
+Pull requests, issues, and suggestions are welcome. Please open an issue or contact the author for questions about the dataset, code, or research use.
