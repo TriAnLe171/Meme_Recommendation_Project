@@ -322,7 +322,7 @@ For the full methodology, dataset description, exploratory analysis, retrieval d
 ## Author
 
 **Do Tri An Le**  
-Ph.D. Student in Computer Science, University of Houston
+Ph.D. Student in Computer Science, University of Houston<br>
 B.A. in Computer Science and Mathematics, Wabash College  
 
 - Email: [triandole@gmail.com](mailto:triandole@gmail.com)
