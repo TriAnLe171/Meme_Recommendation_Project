@@ -245,8 +245,6 @@ key_gemini = "YOUR_GEMINI_API_KEY"
 
 ## Retrieval Demo
 
-- MemeMatch Retrieval System (Web): [https://hugely-climbing-moray.ngrok-free.app](https://hugely-climbing-moray.ngrok-free.app)
-- MemeMatch Android App (Download): [https://drive.google.com/drive/u/2/home](https://drive.google.com/file/d/1wZ1ORq2wbjOP-TfdhMHnRdoSeN1UgZvR/view?usp=sharing)
 - Demo Video: [Youtube video here](https://youtu.be/j9r0e2kqzwI)
 
 ## Dataset Access
@@ -285,23 +283,47 @@ MemeMatch has several important limitations:
 
 ## Citation
 
-**Coming soon**
+If you use MemeMatch in your research, please cite our paper:
+
+**Le, D. T. A., Köller, D. Á., Deng, Q., & Molontay, R. (2026).** MemeMatch: A Large-Scale Dual-Context Multimodal Dataset and Retrieval System for Internet Memes. *Proceedings of the International AAAI Conference on Web and Social Media, 20*(1), 2828–2838. https://doi.org/10.1609/icwsm.v20i1.42785
+
+**BibTeX:**
+
+```bibtex
+@inproceedings{le2026memematch,
+  title     = {MemeMatch: A Large-Scale Dual-Context
+               Multimodal Dataset and Retrieval System
+               for Internet Memes},
+  author    = {Le, Do Tri An and
+               K{\"o}ller, Don{\'a}t {\'A}kos and
+               Deng, Qixin and
+               Molontay, Roland},
+  booktitle = {Proceedings of the International AAAI
+               Conference on Web and Social Media},
+  volume    = {20},
+  number    = {1},
+  pages     = {2828--2838},
+  year      = {2026},
+  doi       = {10.1609/icwsm.v20i1.42785},
+  url       = {https://doi.org/10.1609/icwsm.v20i1.42785}
+}
+```
 
 ---
 
 ## Paper
 
-For the full methodology, dataset description, exploratory analysis, retrieval design, and limitations, see:
+For the full methodology, dataset description, exploratory analysis, retrieval design, and limitations, see our paper published at ICWSM 2026:
 
-[MemeMatch: A Large-Scale Dual-Context Multimodal Dataset and Retrieval System for Internet Memes](https://github.com/TriAnLe171/MemeMatch-v1.0/blob/main/paper.pdf)
+[MemeMatch: A Large-Scale Dual-Context Multimodal Dataset and Retrieval System for Internet Memes](https://doi.org/10.1609/icwsm.v20i1.42785)
 
 ---
 
 ## Author
 
 **Do Tri An Le**  
-Department of Mathematics and Computer Science, Wabash College  
-Incoming Ph.D. Student in Computer Science, University of Houston  
+Ph.D. Student in Computer Science, University of Houston
+B.A. in Computer Science and Mathematics, Wabash College  
 
 - Email: [triandole@gmail.com](mailto:triandole@gmail.com)
 - Homepage: [https://trianle171.github.io/](https://trianle171.github.io/)
@@ -311,7 +333,13 @@ Incoming Ph.D. Student in Computer Science, University of Houston
 
 ## License
 
-© 2026 MemeMatch. All rights reserved.
+The original source code in this repository is released under the [MIT License](LICENSE).
+
+You are free to use, modify, and distribute the licensed code, including for commercial purposes, provided that the original copyright notice and license terms are retained.
+
+**Scope:** The MIT License applies to the original project code and does not automatically cover the MemeMatch dataset, research paper, third-party meme images, pretrained models, or other third-party materials. These resources remain subject to their respective licenses, terms of use, and applicable rights.
+
+For dataset access, please refer to the [MemeMatch dataset](https://doi.org/10.34740/kaggle/dsv/14510064). For research attribution, please cite the MemeMatch paper above.
 
 ---
 
