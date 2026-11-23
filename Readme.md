@@ -290,22 +290,17 @@ If you use MemeMatch in your research, please cite our paper:
 **BibTeX:**
 
 ```bibtex
-@inproceedings{le2026memematch,
-  title     = {MemeMatch: A Large-Scale Dual-Context
-               Multimodal Dataset and Retrieval System
-               for Internet Memes},
-  author    = {Le, Do Tri An and
-               K{\"o}ller, Don{\'a}t {\'A}kos and
-               Deng, Qixin and
-               Molontay, Roland},
-  booktitle = {Proceedings of the International AAAI
-               Conference on Web and Social Media},
-  volume    = {20},
-  number    = {1},
-  pages     = {2828--2838},
-  year      = {2026},
-  doi       = {10.1609/icwsm.v20i1.42785},
-  url       = {https://doi.org/10.1609/icwsm.v20i1.42785}
+@article{le2026memematch,
+  title   = {{MemeMatch}: A Large-Scale Dual-Context Multimodal Dataset and Retrieval System for Internet Memes},
+  author  = {Le, Do Tri An and Köller, Donát Ákos and Deng, Qixin and Molontay, Roland},
+  journal = {Proceedings of the International AAAI Conference on Web and Social Media},
+  volume  = {20},
+  number  = {1},
+  pages   = {2828--2838},
+  year    = {2026},
+  month   = may,
+  doi     = {10.1609/icwsm.v20i1.42785},
+  url     = {https://ojs.aaai.org/index.php/ICWSM/article/view/42785}
 }
 ```
 
